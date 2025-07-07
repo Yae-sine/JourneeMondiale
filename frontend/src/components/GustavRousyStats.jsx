@@ -7,7 +7,7 @@ function GustavRousyStats() {
             <img src="images/Landing A/Visuel_bas.png" alt="Jeune adulte" className="absolute inset-0 w-full h-auto object-cover z-0" />
             {/* Content */}
             <div className="relative z-20 flex flex-col justify-center h-full w-full max-w-7xl mx-auto px-8 mb-12">
-                <div className="max-w-4xl pt-8 mb-8 pl-8">
+                <div className="max-w-3xl pt-8 mb-8 pl-8">
                     <h2 className="text-white text-3xl md:text-5xl font-light leading-tight mb-2 tracking-wide">
                         GUSTAVE ROUSSY, L'EXCELLENCE<br />
                         AU SERVICE DE LA PRISE<br />
