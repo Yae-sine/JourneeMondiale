@@ -1,3 +1,30 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom styles */
+.donation-button {
+    transition: all 0.3s ease;
+}
+
+.donation-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.play-button:hover {
+    transform: scale(1.05);
+}
+
+.amount-button:hover {
+    transform: scale(1.05);
+}
+
+.nav-arrow:hover {
+    background-color: rgba(219, 39, 119, 0.8);
+}
+
+.donation-bar {
+    background: linear-gradient(180deg, rgba(17, 24, 39, 0.85) 0%, rgba(17, 24, 39, 0.9) 100%);
+    backdrop-filter: blur(10px);
+}

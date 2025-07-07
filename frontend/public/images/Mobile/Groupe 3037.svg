@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="280.112" height="61.813" viewBox="0 0 280.112 61.813">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_42" data-name="Rectangle 42" width="38.084" height="36.158" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="Groupe_3037" data-name="Groupe 3037" transform="translate(-992 103)">
+    <g id="btn" transform="translate(-578 -149)">
+      <path id="Tracé_94" data-name="Tracé 94" d="M30.906,0h218.3a30.906,30.906,0,0,1,0,61.813H30.906A30.906,30.906,0,0,1,30.906,0Z" transform="translate(1570 46)" fill="#fff"/>
+      <text id="Je_préfère_faire_un_don_ponctuel" data-name="Je préfère
+faire un don ponctuel" transform="translate(1629 74)" fill="#d21181" font-size="16" font-family="DINPro-Bold, DIN Pro" font-weight="700"><tspan x="0" y="0">JE PRÉFÈRE</tspan><tspan x="0" y="20">FAIRE UN DON PONCTUEL</tspan></text>
+      <g id="picto_coeur" data-name="picto coeur" transform="translate(1583.301 59.219)">
+        <g id="Groupe_43" data-name="Groupe 43" clip-path="url(#clip-path)">
+          <path id="Tracé_90" data-name="Tracé 90" d="M23.632,2.423c7.379-3.017,12.685,1.8,12.393,8.1s-5.274,15.14-5.274,15.14a23.471,23.471,0,0,1-3.973,1.14S13.8,17.5,13.156,13.743a10.623,10.623,0,0,1,.4-5.945s1.759-1.574,6.777-1.524Z" transform="translate(-4.413 2.897)" fill="#d21181"/>
+          <path id="Tracé_91" data-name="Tracé 91" d="M23.632,2.423c7.379-3.017,12.685,1.8,12.393,8.1s-5.274,15.14-5.274,15.14a23.471,23.471,0,0,1-3.973,1.14S13.8,17.5,13.156,13.743a10.623,10.623,0,0,1,.4-5.945s1.759-1.574,6.777-1.524Z" transform="translate(-4.413 2.897)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <path id="Tracé_92" data-name="Tracé 92" d="M9.685,10.62S4.962,8.11,2.42,12.771,2.759,23.6,9.15,26.729s8.255,2.953,8.255,2.953,5.2-8.967,5.49-15.258-4.484-10.987-9.2-8.9a7.008,7.008,0,0,0-4.006,5.1" transform="translate(4.96 0.013)" fill="#d21181"/>
+          <path id="Tracé_93" data-name="Tracé 93" d="M9.685,10.62S4.962,8.11,2.42,12.771,2.759,23.6,9.15,26.729s8.255,2.953,8.255,2.953,5.2-8.967,5.49-15.258-4.484-10.987-9.2-8.9A7.008,7.008,0,0,0,9.685,10.62Z" transform="translate(4.96 0.013)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

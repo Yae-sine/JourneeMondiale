@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="110" height="110" viewBox="0 0 110 110">
+  <g id="player" transform="translate(-908 -455.56)">
+    <g id="Ellipse_18" data-name="Ellipse 18" transform="translate(908 455.56)" fill="none" stroke="#fff" stroke-width="2" opacity="0.6">
+      <circle cx="55" cy="55" r="55" stroke="none"/>
+      <circle cx="55" cy="55" r="54" fill="none"/>
+    </g>
+    <circle id="Ellipse_19" data-name="Ellipse 19" cx="41.5" cy="41.5" r="41.5" transform="translate(922 468.56)" fill="#fff" opacity="0.4"/>
+    <path id="Polygone_2" data-name="Polygone 2" d="M15.406,4.468a3,3,0,0,1,5.189,0L33.383,26.494A3,3,0,0,1,30.789,31H5.211a3,3,0,0,1-2.594-4.506Z" transform="translate(984 491.56) rotate(90)" fill="#fff"/>
+  </g>
+</svg>
