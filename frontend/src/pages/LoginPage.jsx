@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import Footer from '../components/Footer';
 
 function LoginPage() {
@@ -24,31 +25,32 @@ function LoginPage() {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:8080/api/auth/signin', {
-                method: 'POST',
+            const response = await axios.post('http://localhost:8080/api/auth/signin', formData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                credentials: 'include', // Important for cookies
-                body: JSON.stringify(formData)
+                withCredentials: true, // Important for cookies
             });
 
-            if (response.ok) {
-                const data = await response.json();
-                console.log('Login successful:', data);
-                
-                // Store user info in localStorage (optional)
-                // localStorage.setItem('user', JSON.stringify(data));
-                
-                // Redirect to home page
-                navigate('/');
-            } else {
-                const errorData = await response.json();
-                setError(errorData.message || 'Login failed. Please try again.');
-            }
+            console.log('Login successful:', response.data);
+            
+            // Store user info in localStorage (optional)
+            // localStorage.setItem('user', JSON.stringify(response.data));
+            
+            // Redirect to home page
+            navigate('/');
         } catch (err) {
             console.error('Login error:', err);
-            setError('Network error. Please check your connection.');
+            if (err.response) {
+                // Server responded with error status
+                setError(err.response.data.message || 'Login failed. Please try again.');
+            } else if (err.request) {
+                // Request was made but no response received
+                setError('Network error. Please check your connection.');
+            } else {
+                // Something else happened
+                setError('An unexpected error occurred.');
+            }
         } finally {
             setLoading(false);
         }
