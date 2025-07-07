@@ -1,0 +1,13 @@
+<svg id="picto_coeur" data-name="picto coeur" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48.674" height="44.699" viewBox="0 0 48.674 44.699">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_42" data-name="Rectangle 42" width="48.674" height="44.699" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="Groupe_43" data-name="Groupe 43" clip-path="url(#clip-path)">
+    <path id="Tracé_90" data-name="Tracé 90" d="M26.6,2.641c9.431-3.729,16.212,2.231,15.839,10.008S35.7,31.365,35.7,31.365a30.772,30.772,0,0,1-5.078,1.41s-16.59-11.49-17.41-16.14.513-7.349.513-7.349S15.975,7.339,22.387,7.4Z" transform="translate(-2.039 3.936)" fill="#d21181"/>
+    <path id="Tracé_91" data-name="Tracé 91" d="M26.6,2.641c9.431-3.729,16.212,2.231,15.839,10.008S35.7,31.365,35.7,31.365a30.772,30.772,0,0,1-5.078,1.41s-16.59-11.49-17.41-16.14.513-7.349.513-7.349S15.975,7.339,22.387,7.4Z" transform="translate(-2.039 3.936)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+    <path id="Tracé_92" data-name="Tracé 92" d="M11.961,11.943S5.924,8.839,2.676,14.6s.433,13.381,8.6,17.255,10.551,3.651,10.551,3.651,6.643-11.085,7.016-18.862-5.731-13.582-11.763-11a8.675,8.675,0,0,0-5.12,6.3" transform="translate(6.756 1.203)" fill="#d21181"/>
+    <path id="Tracé_93" data-name="Tracé 93" d="M11.961,11.943S5.924,8.839,2.676,14.6s.433,13.381,8.6,17.255,10.551,3.651,10.551,3.651,6.643-11.085,7.016-18.862-5.731-13.582-11.763-11A8.675,8.675,0,0,0,11.961,11.943Z" transform="translate(6.756 1.203)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+  </g>
+</svg>

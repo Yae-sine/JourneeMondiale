@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="329" height="144" viewBox="0 0 329 144">
+  <g id="cartouche" transform="translate(-80 -2005)">
+    <rect id="Rectangle_53" data-name="Rectangle 53" width="231" height="47" transform="translate(80 2005)" fill="#00aca8"/>
+    <rect id="Rectangle_63" data-name="Rectangle 63" width="329" height="47" transform="translate(80 2042)" fill="#00aca8"/>
+    <rect id="Rectangle_65" data-name="Rectangle 65" width="322" height="47" transform="translate(80 2074)" fill="#00aca8"/>
+    <text id="Émilie_T_40_ans_touchée_par_un_cancer_du_côlon_métastatique_" data-name="Émilie T, 40 ans,
+touchée par un cancer
+du côlon métastatique
+" transform="translate(90 2039)" fill="#fff" font-size="25" font-family="DINPro-Medium, DIN Pro" font-weight="500"><tspan x="0" y="0">ÉMILIE T, 40 ANS,</tspan><tspan x="0" y="35">TOUCHÉE PAR UN CANCER</tspan><tspan x="0" y="70">DU CÔLON MÉTASTATIQUE</tspan><tspan x="0" y="105"></tspan></text>
+  </g>
+</svg>

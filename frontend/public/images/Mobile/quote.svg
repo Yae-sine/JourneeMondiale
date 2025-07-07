@@ -1,0 +1,13 @@
+<svg id="quote" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="50" height="37" viewBox="0 0 50 37">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_52" data-name="Rectangle 52" width="50" height="37" transform="translate(0 0)" fill="#68e2de"/>
+    </clipPath>
+  </defs>
+  <g id="quote-2" data-name="quote" transform="translate(0 0)" opacity="0.6">
+    <g id="Groupe_48" data-name="Groupe 48" clip-path="url(#clip-path)">
+      <path id="Tracé_95" data-name="Tracé 95" d="M23.985,0A12.009,12.009,0,0,1,35.969,12.036c0,4.911-2.545,9.659-6.343,10.576-1.466.355-2.632,2.243-2.382,4.4.336,2.884,2.933,5.8,8.078,8.1a1.094,1.094,0,0,1-.577,2.086C21.337,35.509,12.046,26.731,12,14.312,12,5.771,17.025,0,23.985,0" transform="translate(14.23 -0.339)" fill="#68e2de"/>
+      <path id="Tracé_96" data-name="Tracé 96" d="M11.985,0A12.009,12.009,0,0,1,23.969,12.036c0,4.911-2.545,9.659-6.343,10.576-1.466.355-2.632,2.243-2.382,4.4.336,2.884,2.933,5.8,8.078,8.1a1.094,1.094,0,0,1-.577,2.086C9.337,35.509.046,26.731,0,14.312,0,5.771,5.025,0,11.985,0" transform="translate(0.081 -0.339)" fill="#68e2de"/>
+    </g>
+  </g>
+</svg>
