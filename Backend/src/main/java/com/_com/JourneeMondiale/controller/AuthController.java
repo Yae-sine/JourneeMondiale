@@ -8,14 +8,16 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com._com.JourneeMondiale.model.ERole;
+// import com._com.JourneeMondiale.model.ERole;
 import com._com.JourneeMondiale.model.User;
 import com._com.JourneeMondiale.payload.request.LoginRequest;
 import com._com.JourneeMondiale.payload.request.SignupRequest;
@@ -80,11 +82,11 @@ public class AuthController {
     }
 
     // Create new user's account
-    ERole role = ERole.ROLE_USER;
+    String role = "USER";
     if (signUpRequest.getRole() != null && !signUpRequest.getRole().isEmpty()) {
       String requestedRole = signUpRequest.getRole();
       if (requestedRole.equalsIgnoreCase("admin")) {
-        role = ERole.ROLE_ADMIN;
+        role = "ADMIN";
       }
     }
     User user = new User(signUpRequest.getUsername(),
@@ -103,5 +105,22 @@ public class AuthController {
     ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
         .body(new MessageResponse("You've been signed out!"));
+  }
+
+  @GetMapping("/me")
+  public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    if (userDetails == null) {
+      return ResponseEntity.status(401).body(new MessageResponse("Unauthorized"));
+    }
+    String role = userDetails.getAuthorities().stream()
+        .map(item -> item.getAuthority())
+        .findFirst().orElse("");
+    return ResponseEntity.ok(new UserInfoResponse(
+      userDetails.getId(),
+      userDetails.getUsername(),
+      // you can add First name and last name if needed
+      userDetails.getEmail(),
+      role
+    ));
   }
 }
