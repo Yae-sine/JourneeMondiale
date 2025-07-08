@@ -1,14 +1,14 @@
 
 import '../index.css';
-import Carousel from '../components/carousel';
-import InfoSection from '../components/InfoSection';
-import WhySection from '../components/WhySection';
-import TestimonialsSection from '../components/TestimonialsSection';
-import CallToAction from '../components/CallToAction';
-import ProgramSection from '../components/ProgramSection';
-import TeamSection from '../components/TeamSection';
-import GustavRousyStats from '../components/GustavRousyStats';
-import Footer from '../components/Footer';
+import Carousel from '../components/home/carousel';
+import InfoSection from '../components/home/InfoSection';
+import WhySection from '../components/home/WhySection';
+import TestimonialsSection from '../components/home/TestimonialsSection';
+import CallToAction from '../components/home/CallToAction';
+import ProgramSection from '../components/home/ProgramSection';
+import TeamSection from '../components/home/TeamSection';
+import GustavRousyStats from '../components/home/GustavRousyStats';
+import Footer from '../components/home/Footer';
 
 function HomePage() {
   return (

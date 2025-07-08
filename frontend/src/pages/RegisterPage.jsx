@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Footer from '../components/Footer';
+import Footer from '../components/home/Footer';
 
 function RegisterPage() {
     const [formData, setFormData] = useState({
