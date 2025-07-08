@@ -75,7 +75,7 @@ const AdminDashboard = () => {
             Tableau de Bord Admin
           </h1>
           <p className="text-gray-600">
-            Bon retour ! Voici ce qui se passe avec Journey Mondiale aujourd'hui.
+            Bon retour ! Voici ce qui se passe avec Gustave Roussey aujourd'hui.
           </p>
           
           {/* Welcome Message */}
@@ -89,7 +89,7 @@ const AdminDashboard = () => {
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">
-                  Bienvenue dans le Panneau d'Administration de Journey Mondiale
+                  Bienvenue dans le Panneau d'Administration de Gustave Roussey
                 </h3>
                 <p className="text-gray-600">
                   Surveillez et gérez les activités, utilisateurs et donations de votre plateforme en un seul endroit.

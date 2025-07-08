@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import Unauthorized from './pages/Unauthorized';
 import AdminPage from './pages/admin/Dashboard';
+import UsersPage from './pages/admin/UsersPage';
 import AdminRoute from './components/admin/AdminRoute';
 
 function App() {
@@ -20,13 +21,13 @@ function App() {
             <AdminPage />
           </AdminRoute>
         } />
-        {/* <Route path="/admin/users" element={
+         <Route path="/admin/users" element={
           <AdminRoute>
-            <AdminUsers />
+            <UsersPage />
           </AdminRoute>
         } />
         
-        <Route path="/admin/donations" element={
+        {/*<Route path="/admin/donations" element={
           <AdminRoute>
             <AdminDonations />
           </AdminRoute>
