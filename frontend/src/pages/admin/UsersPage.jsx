@@ -22,8 +22,7 @@ const UsersPage = () => {
               firstName: 'John',
               lastName: 'Doe',
               role: 'USER',
-              createdAt: '2024-01-15',
-              isActive: true
+              createdAt: '2024-01-15'
             },
             {
               id: 2,
@@ -32,8 +31,7 @@ const UsersPage = () => {
               firstName: 'Jane',
               lastName: 'Smith',
               role: 'ADMIN',
-              createdAt: '2024-01-10',
-              isActive: true
+              createdAt: '2024-01-10'
             },
             {
               id: 3,
@@ -42,8 +40,7 @@ const UsersPage = () => {
               firstName: 'Mike',
               lastName: 'Johnson',
               role: 'USER',
-              createdAt: '2024-02-20',
-              isActive: false
+              createdAt: '2024-02-20'
             },
             {
               id: 4,
@@ -52,8 +49,7 @@ const UsersPage = () => {
               firstName: 'Sarah',
               lastName: 'Wilson',
               role: 'USER',
-              createdAt: '2024-03-05',
-              isActive: true
+              createdAt: '2024-03-05'
             },
             {
               id: 5,
@@ -62,8 +58,7 @@ const UsersPage = () => {
               firstName: 'David',
               lastName: 'Brown',
               role: 'USER',
-              createdAt: '2024-03-10',
-              isActive: true
+              createdAt: '2024-03-10'
             }
           ]);
           setLoading(false);
@@ -120,20 +115,6 @@ const UsersPage = () => {
       >
         {isAdmin ? <FaUserShield size={10} className="mr-1" /> : <FaUser size={10} className="mr-1" />}
         {role === 'ADMIN' ? 'Administrateur' : 'Utilisateur'}
-      </span>
-    );
-  };
-
-  const getStatusBadge = (isActive) => {
-    return (
-      <span 
-        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-          isActive 
-            ? 'bg-green-100 text-green-800' 
-            : 'bg-red-100 text-red-800'
-        }`}
-      >
-        {isActive ? 'Actif' : 'Inactif'}
       </span>
     );
   };
@@ -238,9 +219,6 @@ const UsersPage = () => {
                       Rôle
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Statut
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Date d'inscription
                     </th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -266,9 +244,6 @@ const UsersPage = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {getRoleBadge(user.role)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {getStatusBadge(user.isActive)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {new Date(user.createdAt).toLocaleDateString('fr-FR')}
