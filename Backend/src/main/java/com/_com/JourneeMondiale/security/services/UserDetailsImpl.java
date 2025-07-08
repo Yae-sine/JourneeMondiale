@@ -35,7 +35,14 @@ public class UserDetailsImpl implements UserDetails {
   }
 
   public static UserDetailsImpl build(User user) {
-    List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getRole()));
+    // Ensure role has ROLE_ prefix for Spring Security
+    String role = user.getRole();
+
+    if (!role.startsWith("ROLE_")) {
+      role = "ROLE_" + role;
+    }
+    
+    List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
 
     return new UserDetailsImpl(
         user.getId(), 

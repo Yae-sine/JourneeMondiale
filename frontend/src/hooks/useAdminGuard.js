@@ -8,13 +8,11 @@ export default function useAdminGuard() {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const res = await fetch('/api/auth/me', { credentials: 'include' });
+        const res = await fetch('http://localhost:8080/api/auth/me', { credentials: 'include' });
         if (res.ok) {
           const data = await res.json();
           setUser(data);
-          console.log(data)
-          setIsAdmin(data.role === 'ROLE_ADMIN');
-          console.log(isAdmin)
+          setIsAdmin(data.role === "ROLE_ADMIN");
         } else {
           setUser(null);
           setIsAdmin(false);

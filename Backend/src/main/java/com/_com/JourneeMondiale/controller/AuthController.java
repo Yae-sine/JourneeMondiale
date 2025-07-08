@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,7 +26,6 @@ import com._com.JourneeMondiale.repository.UserRepository;
 import com._com.JourneeMondiale.security.Jwt.JwtUtils;
 import com._com.JourneeMondiale.security.services.UserDetailsImpl;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 // @CrossOrigin(origins = "*", maxAge = 3600 )
@@ -106,44 +106,79 @@ public class AuthController {
         .body(new MessageResponse("You've been signed out!"));
   }
 
-  // @GetMapping("/me")
-  // public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-  //   if (userDetails == null) {
-  //     return ResponseEntity.status(401).body(new MessageResponse("Unauthorized"));
-  //   }
-  //   String role = userDetails.getAuthorities().stream()
-  //       .map(item -> item.getAuthority())
-  //       .findFirst().orElse("");
-  //   return ResponseEntity.ok(new UserInfoResponse(
-  //     userDetails.getId(),
-  //     userDetails.getUsername(),
-  //     // you can add First name and last name if needed
-  //     userDetails.getEmail(),
-  //     role
-  //   ));
-  // }
-
-
   @GetMapping("/me")
-public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
-    String jwt = jwtUtils.getJwtFromCookies(request);
-    
-    if (jwt == null || !jwtUtils.validateJwtToken(jwt)) {
-        return ResponseEntity.status(401).body(new MessageResponse("Unauthorized - Invalid or missing token"));
+  public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    if (userDetails == null) {
+      return ResponseEntity.status(401).body(new MessageResponse("Unauthorized"));
     }
-    
-    try {
-        String username = jwtUtils.getUserNameFromJwtToken(jwt);
-        User user = userRepository.findByUsername(username);
-        
-        return ResponseEntity.ok(new UserInfoResponse(
-            user.getId(),
-            user.getUsername(),
-            user.getEmail(),
-            user.getRole()
-        ));
-    } catch (Exception e) {
-        return ResponseEntity.status(401).body(new MessageResponse("Unauthorized - " + e.getMessage()));
-    }
-}
+    String role = userDetails.getAuthorities().stream()
+        .map(item -> item.getAuthority())
+        .findFirst().orElse("");
+    return ResponseEntity.ok(new UserInfoResponse(
+      userDetails.getId(),
+      userDetails.getUsername(),
+      // you can add First name and last name if needed
+      userDetails.getEmail(),
+      role
+    ));
+  }
+
+
+  
+
+  // Uncomment this method if you want to use JWT from cookies instead of @AuthenticationPrincipal
+  // This method is an alternative to the @GetMapping("/me") above.
+
+
+  // @GetMapping("/me")
+  // public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
+  //   try {
+  //     // Step 1: Get JWT from cookies
+  //     String jwt = jwtUtils.getJwtFromCookies(request);
+      
+  //     if (jwt == null) {
+  //       return ResponseEntity.status(401).body(new MessageResponse("No authentication token found"));
+  //     }
+      
+  //     // Step 2: Validate JWT token
+  //     if (!jwtUtils.validateJwtToken(jwt)) {
+  //       return ResponseEntity.status(401).body(new MessageResponse("Invalid or expired token"));
+  //     }
+      
+  //     // Step 3: Extract username from JWT
+  //     String username = jwtUtils.getUserNameFromJwtToken(jwt);
+      
+  //     if (username == null || username.trim().isEmpty()) {
+  //       return ResponseEntity.status(401).body(new MessageResponse("Invalid token - no username found"));
+  //     }
+      
+  //     // Step 4: Find user in database
+  //     Optional<User> userOptional = userRepository.findByUsername(username);
+      
+  //     if (userOptional.isEmpty()) {
+  //       return ResponseEntity.status(401).body(new MessageResponse("User not found or has been deactivated"));
+  //     }
+      
+  //     User user = userOptional.get();
+      
+  //     // Step 5: Return user information
+  //     return ResponseEntity.ok(new UserInfoResponse(
+  //         user.getId(),
+  //         user.getUsername(),
+  //         user.getEmail(),
+  //         user.getRole()
+  //     ));
+      
+  //   } catch (io.jsonwebtoken.ExpiredJwtException e) {
+  //     return ResponseEntity.status(401).body(new MessageResponse("Token has expired"));
+  //   } catch (io.jsonwebtoken.MalformedJwtException e) {
+  //     return ResponseEntity.status(401).body(new MessageResponse("Malformed token"));
+  //   } catch (io.jsonwebtoken.UnsupportedJwtException e) {
+  //     return ResponseEntity.status(401).body(new MessageResponse("Unsupported token"));
+  //   } catch (Exception e) {
+  //     // Log the actual error for debugging (but don't expose it to the client)
+  //     System.err.println("Authentication error: " + e.getMessage());
+  //     return ResponseEntity.status(401).body(new MessageResponse("Authentication failed"));
+  //   }
+  // }
 }
