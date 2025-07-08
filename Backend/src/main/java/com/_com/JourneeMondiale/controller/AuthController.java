@@ -1,10 +1,5 @@
 package com._com.JourneeMondiale.controller;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -21,13 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com._com.JourneeMondiale.model.ERole;
-import com._com.JourneeMondiale.model.Role;
 import com._com.JourneeMondiale.model.User;
 import com._com.JourneeMondiale.payload.request.LoginRequest;
 import com._com.JourneeMondiale.payload.request.SignupRequest;
 import com._com.JourneeMondiale.payload.response.MessageResponse;
 import com._com.JourneeMondiale.payload.response.UserInfoResponse;
-import com._com.JourneeMondiale.repository.RoleRepository;
 import com._com.JourneeMondiale.repository.UserRepository;
 import com._com.JourneeMondiale.security.Jwt.JwtUtils;
 import com._com.JourneeMondiale.security.services.UserDetailsImpl;
@@ -47,9 +40,6 @@ public class AuthController {
   UserRepository userRepository;
 
   @Autowired
-  RoleRepository roleRepository;
-
-  @Autowired
   PasswordEncoder encoder;
 
   @Autowired
@@ -67,15 +57,16 @@ public class AuthController {
 
     ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
-    List<String> roles = userDetails.getAuthorities().stream()
+    // Use single role
+    String role = userDetails.getAuthorities().stream()
         .map(item -> item.getAuthority())
-        .collect(Collectors.toList());
+        .findFirst().orElse("");
 
     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
         .body(new UserInfoResponse(userDetails.getId(),
                                    userDetails.getUsername(),
                                    userDetails.getEmail(),
-                                   roles));
+                                   role));
   }
 
   @PostMapping("/signup")
@@ -89,36 +80,19 @@ public class AuthController {
     }
 
     // Create new user's account
+    ERole role = ERole.ROLE_USER;
+    if (signUpRequest.getRole() != null && !signUpRequest.getRole().isEmpty()) {
+      String requestedRole = signUpRequest.getRole();
+      if (requestedRole.equalsIgnoreCase("admin")) {
+        role = ERole.ROLE_ADMIN;
+      }
+    }
     User user = new User(signUpRequest.getUsername(),
                          signUpRequest.getEmail(),signUpRequest.getFirstName(),
                          signUpRequest.getLastName(),
-                         encoder.encode(signUpRequest.getPassword()));
+                         encoder.encode(signUpRequest.getPassword()),
+                         role);
 
-    Set<String> strRoles = signUpRequest.getRole();
-    Set<Role> roles = new HashSet<>();
-
-    if (strRoles == null) {
-      Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-          .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-      roles.add(userRole);
-    } else {
-      strRoles.forEach(role -> {
-        switch (role) {
-        case "admin" -> {
-          Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-          roles.add(adminRole);
-        }
-        default -> {
-          Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-          roles.add(userRole);
-        }
-        }
-      });
-    }
-
-    user.setRoles(roles);
     userRepository.save(user);
 
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
