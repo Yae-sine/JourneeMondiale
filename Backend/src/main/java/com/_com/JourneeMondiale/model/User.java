@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -50,10 +51,11 @@ public class User {
   //           inverseJoinColumns = @JoinColumn(name = "role_id"))
   //private Set<Role> roles = new HashSet<>();
 
-  // Use a single role (enum) instead of a set
-  private ERole role;
+  // Use a single role (string) instead of an 
+  @NotBlank
+  private String role;
 
-  public User(String username, String email, String firstName, String lastName, String password, ERole role) {
+  public User(String username, String email, String firstName, String lastName, String password, String role) {
     this.username = username;
     this.email = email;
     this.firstName = firstName;
