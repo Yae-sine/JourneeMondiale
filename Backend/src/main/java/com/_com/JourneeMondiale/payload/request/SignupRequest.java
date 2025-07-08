@@ -1,6 +1,4 @@
 package com._com.JourneeMondiale.payload.request;
-import java.util.Set;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -26,7 +24,7 @@ public class SignupRequest {
     private String lastName;
     
     
-    private Set<String> role;
+    private String role;
     
     @NotBlank
     @Size(min = 6, max = 40)
