@@ -8,7 +8,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-// import com._com.JourneeMondiale.model.ERole;
 import com._com.JourneeMondiale.model.User;
 import com._com.JourneeMondiale.payload.request.LoginRequest;
 import com._com.JourneeMondiale.payload.request.SignupRequest;
@@ -27,6 +25,7 @@ import com._com.JourneeMondiale.repository.UserRepository;
 import com._com.JourneeMondiale.security.Jwt.JwtUtils;
 import com._com.JourneeMondiale.security.services.UserDetailsImpl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 // @CrossOrigin(origins = "*", maxAge = 3600 )
@@ -107,20 +106,44 @@ public class AuthController {
         .body(new MessageResponse("You've been signed out!"));
   }
 
+  // @GetMapping("/me")
+  // public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+  //   if (userDetails == null) {
+  //     return ResponseEntity.status(401).body(new MessageResponse("Unauthorized"));
+  //   }
+  //   String role = userDetails.getAuthorities().stream()
+  //       .map(item -> item.getAuthority())
+  //       .findFirst().orElse("");
+  //   return ResponseEntity.ok(new UserInfoResponse(
+  //     userDetails.getId(),
+  //     userDetails.getUsername(),
+  //     // you can add First name and last name if needed
+  //     userDetails.getEmail(),
+  //     role
+  //   ));
+  // }
+
+
   @GetMapping("/me")
-  public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-    if (userDetails == null) {
-      return ResponseEntity.status(401).body(new MessageResponse("Unauthorized"));
+public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
+    String jwt = jwtUtils.getJwtFromCookies(request);
+    
+    if (jwt == null || !jwtUtils.validateJwtToken(jwt)) {
+        return ResponseEntity.status(401).body(new MessageResponse("Unauthorized - Invalid or missing token"));
     }
-    String role = userDetails.getAuthorities().stream()
-        .map(item -> item.getAuthority())
-        .findFirst().orElse("");
-    return ResponseEntity.ok(new UserInfoResponse(
-      userDetails.getId(),
-      userDetails.getUsername(),
-      // you can add First name and last name if needed
-      userDetails.getEmail(),
-      role
-    ));
-  }
+    
+    try {
+        String username = jwtUtils.getUserNameFromJwtToken(jwt);
+        User user = userRepository.findByUsername(username);
+        
+        return ResponseEntity.ok(new UserInfoResponse(
+            user.getId(),
+            user.getUsername(),
+            user.getEmail(),
+            user.getRole()
+        ));
+    } catch (Exception e) {
+        return ResponseEntity.status(401).body(new MessageResponse("Unauthorized - " + e.getMessage()));
+    }
+}
 }
