@@ -1,85 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { FaUsers, FaEdit, FaTrash, FaPlus, FaSearch, FaUserShield, FaUser } from 'react-icons/fa';
 import AdminSidebar from '../../components/admin/sidebar';
+import { userService } from '../../services/userService';
 
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('all');
+  const [error, setError] = useState(null);
 
-  // Mock data - replace with actual API calls
+  // Fetch users from API
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        // Simulate API call
-        setTimeout(() => {
-          setUsers([
-            {
-              id: 1,
-              username: 'john_doe',
-              email: 'john@example.com',
-              firstName: 'John',
-              lastName: 'Doe',
-              role: 'USER',
-              createdAt: '2024-01-15'
-            },
-            {
-              id: 2,
-              username: 'jane_admin',
-              email: 'jane@example.com',
-              firstName: 'Jane',
-              lastName: 'Smith',
-              role: 'ADMIN',
-              createdAt: '2024-01-10'
-            },
-            {
-              id: 3,
-              username: 'mike_user',
-              email: 'mike@example.com',
-              firstName: 'Mike',
-              lastName: 'Johnson',
-              role: 'USER',
-              createdAt: '2024-02-20'
-            },
-            {
-              id: 4,
-              username: 'sarah_wilson',
-              email: 'sarah@example.com',
-              firstName: 'Sarah',
-              lastName: 'Wilson',
-              role: 'USER',
-              createdAt: '2024-03-05'
-            },
-            {
-              id: 5,
-              username: 'david_brown',
-              email: 'david@example.com',
-              firstName: 'David',
-              lastName: 'Brown',
-              role: 'USER',
-              createdAt: '2024-03-10'
-            }
-          ]);
-          setLoading(false);
-        }, 1000);
+        setLoading(true);
+        setError(null);
+        const fetchedUsers = await userService.getAllUsers(searchTerm, filterRole);
+        setUsers(fetchedUsers);
       } catch (error) {
         console.error('Error fetching users:', error);
+        setError('Erreur lors du chargement des utilisateurs');
+      } finally {
         setLoading(false);
       }
     };
 
     fetchUsers();
-  }, []);
+  }, [searchTerm, filterRole]);
 
-  // Filter users based on search term and role
+  // Filter users based on search term and role (client-side filtering for immediate response)
   const filteredUsers = users.filter(user => {
     const matchesSearch = 
-      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase());
+      user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesRole = filterRole === 'all' || user.role === filterRole;
+    // Extract role from user.role string ("ROLE_ADMIN" or "ROLE_USER")
+    const userRole = user.role ;
+    
+    const matchesRole = filterRole === 'all' || userRole === filterRole;
     
     return matchesSearch && matchesRole;
   });
@@ -89,11 +49,16 @@ const UsersPage = () => {
     // Implement edit user logic
   };
 
-  const handleDeleteUser = (userId) => {
+  const handleDeleteUser = async (userId) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
-      setUsers(users.filter(user => user.id !== userId));
-      console.log('Utilisateur supprimé:', userId);
-      // Implement delete user API call
+      try {
+        await userService.deleteUser(userId);
+        setUsers(users.filter(user => user.id !== userId));
+        console.log('Utilisateur supprimé:', userId);
+      } catch (error) {
+        console.error('Erreur lors de la suppression:', error);
+        alert('Erreur lors de la suppression de l\'utilisateur');
+      }
     }
   };
 
@@ -102,8 +67,9 @@ const UsersPage = () => {
     // Implement add user logic - could open a modal or navigate to form
   };
 
-  const getRoleBadge = (role) => {
-    const isAdmin = role === 'ADMIN';
+  const getRoleBadge = (user) => {
+    const isAdmin = user.role === 'ADMIN';
+    
     return (
       <span 
         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -114,7 +80,7 @@ const UsersPage = () => {
         style={{ backgroundColor: isAdmin ? '#00ACA8' : undefined }}
       >
         {isAdmin ? <FaUserShield size={10} className="mr-1" /> : <FaUser size={10} className="mr-1" />}
-        {role === 'ADMIN' ? 'Administrateur' : 'Utilisateur'}
+        {isAdmin ? 'Administrateur' : 'Utilisateur'}
       </span>
     );
   };
@@ -204,6 +170,18 @@ const UsersPage = () => {
               </div>
               <p className="text-gray-500">Chargement des utilisateurs...</p>
             </div>
+          ) : error ? (
+            <div className="p-8 text-center">
+              <div className="text-red-500 mb-4">⚠️</div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Erreur de chargement</h3>
+              <p className="text-red-600">{error}</p>
+              <button 
+                onClick={() => window.location.reload()}
+                className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Réessayer
+              </button>
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
@@ -232,7 +210,7 @@ const UsersPage = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
                           <div className="text-sm font-medium text-gray-900">
-                            {user.firstName} {user.lastName}
+                            {user.firstName || ''} {user.lastName || ''}
                           </div>
                           <div className="text-sm text-gray-500">
                             @{user.username}
@@ -243,10 +221,10 @@ const UsersPage = () => {
                         <div className="text-sm text-gray-900">{user.email}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {getRoleBadge(user.role)}
+                        {getRoleBadge(user)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(user.createdAt).toLocaleDateString('fr-FR')}
+                        {user.createdAt ? new Date(user.createdAt).toLocaleDateString('fr-FR') : 'N/A'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end space-x-2">
