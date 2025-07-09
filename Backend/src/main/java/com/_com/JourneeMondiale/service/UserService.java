@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com._com.JourneeMondiale.model.User;
@@ -13,6 +14,9 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -22,6 +26,10 @@ public class UserService {
     }
 
     public User createUser(User user) {
+        // Hash the password before saving
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         return userRepository.save(user);
     }
 

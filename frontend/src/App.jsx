@@ -6,6 +6,7 @@ import Unauthorized from './pages/Unauthorized';
 import AdminPage from './pages/admin/Dashboard';
 import UsersPage from './pages/admin/UsersPage';
 import EditUserForm from './pages/admin/EditUserForm';
+import AddUserForm from './pages/admin/AddUserForm';
 import AdminRoute from './components/admin/AdminRoute';
 
 function App() {
@@ -31,6 +32,12 @@ function App() {
         <Route path="/admin/users/edit/:id" element={
           <AdminRoute>
             <EditUserForm />
+          </AdminRoute>
+        } />
+        
+        <Route path="/admin/users/add" element={
+          <AdminRoute>
+            <AddUserForm />
           </AdminRoute>
         } />
         

@@ -95,8 +95,7 @@ const UsersPage = () => {
   };
 
   const handleAddUser = () => {
-    console.log('Ajouter nouvel utilisateur');
-    // Implement add user logic - could open a modal or navigate to form
+    navigate('/admin/users/add');
   };
 
   const getRoleBadge = (user) => {
