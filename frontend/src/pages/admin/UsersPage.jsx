@@ -1,14 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { FaUsers, FaEdit, FaTrash, FaPlus, FaSearch, FaUserShield, FaUser } from 'react-icons/fa';
+import { useNavigate, useLocation } from 'react-router-dom';
 import AdminSidebar from '../../components/admin/sidebar';
+import ConfirmationModal from '../../components/admin/ConfirmationModal';
 import { userService } from '../../services/userService';
 
 const UsersPage = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('all');
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
+
+  // Check for success message from navigation state
+  useEffect(() => {
+    if (location.state?.message) {
+      setSuccessMessage(location.state.message);
+      // Clear the message after 5 seconds
+      setTimeout(() => setSuccessMessage(null), 5000);
+      // Clear the state to prevent message from showing again on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   // Fetch users from API
   useEffect(() => {
@@ -45,21 +63,35 @@ const UsersPage = () => {
   });
 
   const handleEditUser = (userId) => {
-    console.log('Éditer utilisateur:', userId);
-    // Implement edit user logic
+    navigate(`/admin/users/edit/${userId}`);
   };
 
-  const handleDeleteUser = async (userId) => {
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
-      try {
-        await userService.deleteUser(userId);
-        setUsers(users.filter(user => user.id !== userId));
-        console.log('Utilisateur supprimé:', userId);
-      } catch (error) {
-        console.error('Erreur lors de la suppression:', error);
-        alert('Erreur lors de la suppression de l\'utilisateur');
-      }
+  const handleDeleteUser = (user) => {
+    setUserToDelete(user);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteUser = async () => {
+    if (!userToDelete) return;
+    
+    try {
+      await userService.deleteUser(userToDelete.id);
+      setUsers(users.filter(user => user.id !== userToDelete.id));
+      setSuccessMessage(`Utilisateur ${userToDelete.username} supprimé avec succès`);
+      // Clear success message after 5 seconds
+      setTimeout(() => setSuccessMessage(null), 5000);
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+      setError('Erreur lors de la suppression de l\'utilisateur');
+    } finally {
+      setShowDeleteModal(false);
+      setUserToDelete(null);
     }
+  };
+
+  const cancelDeleteUser = () => {
+    setShowDeleteModal(false);
+    setUserToDelete(null);
   };
 
   const handleAddUser = () => {
@@ -94,6 +126,13 @@ const UsersPage = () => {
       <div className="flex-1 p-8">
         {/* Header */}
         <div className="mb-8">
+          {/* Success Message */}
+          {successMessage && (
+            <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-green-600 text-sm">✅ {successMessage}</p>
+            </div>
+          )}
+          
           <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -245,7 +284,7 @@ const UsersPage = () => {
                             <FaEdit size={16} />
                           </button>
                           <button
-                            onClick={() => handleDeleteUser(user.id)}
+                            onClick={() => handleDeleteUser(user)}
                             className="p-2 rounded-lg text-gray-600 hover:bg-red-500 hover:text-white hover:shadow-md transition-all duration-200"
                             title="Supprimer"
                           >
@@ -273,6 +312,22 @@ const UsersPage = () => {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={cancelDeleteUser}
+        onConfirm={confirmDeleteUser}
+        title="Supprimer l'utilisateur"
+        message={
+          userToDelete ? 
+          `Êtes-vous sûr de vouloir supprimer l'utilisateur "${userToDelete.username}" ? Cette action est irréversible.` :
+          "Êtes-vous sûr de vouloir supprimer cet utilisateur ?"
+        }
+        confirmText="Supprimer"
+        cancelText="Annuler"
+        type="danger"
+      />
     </div>
   );
 };

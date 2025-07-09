@@ -29,7 +29,6 @@ import com._com.JourneeMondiale.security.services.UserDetailsImpl;
 import jakarta.validation.Valid;
 
 // @CrossOrigin(origins = "*", maxAge = 3600 )
-// for Angular Client (withCredentials)
 @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600, allowCredentials="true")
 @RestController
 @RequestMapping("/api/auth")

@@ -41,7 +41,11 @@ const AdminSidebar = () => {
   ];
 
   const isActiveRoute = (path) => {
-    return location.pathname === path;
+    // Check for exact match first
+    if (location.pathname === path || location.pathname.startsWith(path + '/')) {
+      return true;
+    }
+    return false;
   };
 
   return (
