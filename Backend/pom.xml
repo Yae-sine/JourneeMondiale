@@ -94,7 +94,11 @@
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
-		
+		<dependency>
+			<groupId>com.stripe</groupId>
+			<artifactId>stripe-java</artifactId>
+			<version>24.11.0</version> 
+		</dependency>
 	</dependencies>
 
 	<build>

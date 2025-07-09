@@ -1,6 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
+import DonationForm from '../payment/DonationForm';
 
 function CallToAction() {
+    const [showDonationForm, setShowDonationForm] = useState(false);
+
+    const handleDonationClick = () => {
+        setShowDonationForm(true);
+    };
+
+    const handleCloseDonationForm = () => {
+        setShowDonationForm(false);
+    };
     return (
         <section className="w-full py-10 px-2 md:px-0 bg-[#00ACA8]">
             <div className="max-w-6xl mx-auto flex md:flex-row items-center md:items-stretch gap-8">
@@ -16,7 +26,10 @@ function CallToAction() {
                         <button className="bg-pink-600 text-white rounded-full px-8 py-3 text-base font-semibold mb-8 shadow-md hover:bg-pink-800 flex items-center donation-button">
                             <img src="images/Landing A/picto coeur.svg" alt="Heart" className="w-5 h-5 mr-2" /> JE FAIS UN DON RÉGULIER
                         </button>
-                        <button className="bg-pink-600 text-white rounded-full px-8 py-3 text-base font-semibold mb-8 shadow-md hover:bg-pink-800 flex items-center donation-button">
+                        <button 
+                            onClick={handleDonationClick}
+                            className="bg-pink-600 text-white rounded-full px-8 py-3 text-base font-semibold mb-8 shadow-md hover:bg-pink-800 flex items-center donation-button transition-colors"
+                        >
                             <img src="images/Landing A/picto coeur.svg" alt="Heart" className="w-5 h-5 mr-2" /> JE FAIS UN DON PONCTUEL
                         </button>
                     </div>
@@ -29,6 +42,12 @@ function CallToAction() {
                     </p>
                 </div>
             </div>
+
+            {/* Donation Form Modal */}
+            <DonationForm 
+                isOpen={showDonationForm} 
+                onClose={handleCloseDonationForm} 
+            />
         </section>
     );
 }

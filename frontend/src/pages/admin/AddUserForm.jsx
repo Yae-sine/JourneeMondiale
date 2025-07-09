@@ -111,7 +111,7 @@ const AddUserForm = () => {
                   Ajouter un Utilisateur
                 </h1>
                 <p className="text-gray-600">
-                  Créez un nouveau compte utilisateur
+                  Créez un nouveau compte 
                 </p>
               </div>
             </div>
