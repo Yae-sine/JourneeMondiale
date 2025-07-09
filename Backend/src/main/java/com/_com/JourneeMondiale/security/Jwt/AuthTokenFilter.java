@@ -33,11 +33,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
     
-    // Skip JWT processing for auth endpoints
-     if (request.getServletPath().startsWith("/api/auth/")) {
-       filterChain.doFilter(request, response);
-       return;
-     }
+    // Skip JWT processing only for signin/signup endpoints
+    if (request.getServletPath().equals("/api/auth/signin") || 
+        request.getServletPath().equals("/api/auth/signup")) {
+      filterChain.doFilter(request, response);
+      return;
+    }
+    
     try {
       String jwt = parseJwt(request);
       if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
@@ -52,7 +54,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        SecurityContextHolder.getContext().setAuthentication(authentication);   
       }
     } catch (Exception e) {
       logger.error("Cannot set user authentication: {}", e);

@@ -1,0 +1,97 @@
+import axios from 'axios';
+
+// User service for API calls
+const API_BASE_URL = 'http://localhost:8080/api/users';
+
+// Create axios instance with default configuration
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true, // This ensures HTTP-only cookies are sent
+});
+
+// Add response interceptor for error handling
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Unauthorized - redirect to login
+      window.location.href = '/login';
+      return Promise.reject(new Error('Unauthorized'));
+    }
+    if (error.response?.status === 403) {
+      // Forbidden - insufficient permissions
+      return Promise.reject(new Error('Insufficient permissions'));
+    }
+    return Promise.reject(error);
+  }
+);
+
+export const userService = {
+  // Get all users with optional search and role filter
+  getAllUsers: async (searchTerm = '', role = 'all') => {
+    try {
+      const params = {};
+      
+      if (searchTerm && searchTerm.trim() !== '') {
+        params.search = searchTerm;
+      }
+      
+      if (role && role !== 'all') {
+        params.role = role;
+      }
+      
+      const response = await apiClient.get('/', { params });
+      return response.data || [];
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      throw error;
+    }
+  },
+
+  // Get user by ID
+  getUserById: async (id) => {
+    try {
+      const response = await apiClient.get(`/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      throw error;
+    }
+  },
+
+  // Create new user
+  createUser: async (userData) => {
+    try {
+      const response = await apiClient.post('/', userData);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
+  },
+
+  // Update user
+  updateUser: async (id, userData) => {
+    try {
+      const response = await apiClient.put(`/${id}`, userData);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating user:', error);
+      throw error;
+    }
+  },
+
+  // Delete user
+  deleteUser: async (id) => {
+    try {
+      const response = await apiClient.delete(`/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      throw error;
+    }
+  }
+};

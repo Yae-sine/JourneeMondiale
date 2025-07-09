@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Footer from '../components/Footer';
+import axios from 'axios';
+import Footer from '../components/home/Footer';
 
 function RegisterPage() {
     const [formData, setFormData] = useState({
@@ -40,28 +41,29 @@ function RegisterPage() {
         const { confirmPassword, ...apiData } = formData;
 
         try {
-            const response = await fetch('http://localhost:8080/api/auth/signup', {
-                method: 'POST',
+            const response = await axios.post('http://localhost:8080/api/auth/signup', apiData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                credentials: 'include',
-                body: JSON.stringify(apiData)
+                withCredentials: true,
             });
 
-            const data = await response.json();
-
-            if (response.ok) {
-                setSuccess('Compte créé avec succès ! Redirection vers la page de connexion...');
-                setTimeout(() => {
-                    navigate('/login');
-                }, 2000);
-            } else {
-                setError(data.message || 'Erreur lors de la création du compte.');
-            }
+            setSuccess('Compte créé avec succès ! Redirection vers la page de connexion...');
+            setTimeout(() => {
+                navigate('/login');
+            }, 2000);
         } catch (err) {
             console.error('Registration error:', err);
-            setError('Erreur réseau. Veuillez vérifier votre connexion.');
+            if (err.response) {
+                // Server responded with error status
+                setError(err.response.data.message || 'Erreur lors de la création du compte.');
+            } else if (err.request) {
+                // Request was made but no response received
+                setError('Erreur réseau. Veuillez vérifier votre connexion.');
+            } else {
+                // Something else happened
+                setError('Une erreur inattendue s\'est produite.');
+            }
         } finally {
             setLoading(false);
         }
@@ -220,7 +222,7 @@ function RegisterPage() {
                             </div>
                         </div>
 
-                        <div className="flex items-center">
+                        {/* <div className="flex items-center">
                             <input
                                 id="terms"
                                 name="terms"
@@ -238,7 +240,7 @@ function RegisterPage() {
                                     politique de confidentialité
                                 </a>
                             </label>
-                        </div>
+                        </div> */}
 
                         <div>
                             <button
