@@ -15,7 +15,9 @@ const EditUserForm = () => {
     lastName: '',
     username: '',
     email: '',
-    role: 'USER'
+    role: 'USER',
+    createdAt: null,
+    updatedAt: null
   });
 
   // Fetch user data when component mounts
@@ -30,7 +32,9 @@ const EditUserForm = () => {
           lastName: user.lastName || '',
           username: user.username || '',
           email: user.email || '',
-          role: user.role || 'USER'
+          role: user.role || 'USER',
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt
         });
       } catch (error) {
         console.error('Error fetching user:', error);
@@ -292,6 +296,49 @@ const EditUserForm = () => {
               </button>
             </div>
           </form>
+
+          {/* Read-only Information */}
+          {(formData.createdAt || formData.updatedAt) && (
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <h3 className="text-sm font-medium text-gray-700 mb-3">
+                Informations de Suivi
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {formData.createdAt && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      Date de création
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {new Date(formData.createdAt).toLocaleString('fr-FR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </p>
+                  </div>
+                )}
+                {formData.updatedAt && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      Dernière modification
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {new Date(formData.updatedAt).toLocaleString('fr-FR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

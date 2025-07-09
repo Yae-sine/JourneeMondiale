@@ -66,7 +66,9 @@ public class AuthController {
         .body(new UserInfoResponse(userDetails.getId(),
                                    userDetails.getUsername(),
                                    userDetails.getEmail(),
-                                   role));
+                                   role,
+                                   userDetails.getCreatedAt(),
+                                   userDetails.getUpdatedAt()));
   }
 
   @PostMapping("/signup")
@@ -118,7 +120,9 @@ public class AuthController {
       userDetails.getUsername(),
       // you can add First name and last name if needed
       userDetails.getEmail(),
-      role
+      role,
+      userDetails.getCreatedAt(),
+      userDetails.getUpdatedAt()
     ));
   }
 

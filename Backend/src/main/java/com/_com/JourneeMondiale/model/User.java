@@ -1,5 +1,10 @@
 package com._com.JourneeMondiale.model;
 
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -51,9 +56,14 @@ public class User {
   //           inverseJoinColumns = @JoinColumn(name = "role_id"))
   //private Set<Role> roles = new HashSet<>();
 
-  // Use a single role (string) instead of an 
   @NotBlank
   private String role;
+
+  @CreationTimestamp
+  private LocalDateTime createdAt;
+
+  @UpdateTimestamp
+  private LocalDateTime updatedAt;
 
   public User(String username, String email, String firstName, String lastName, String password, String role) {
     this.username = username;
@@ -63,8 +73,4 @@ public class User {
     this.password = password;
     this.role = role;
   }
-
-  // Optionally, add a setter/getter for role if not using Lombok's @Data
-  // public ERole getRole() { return role; }
-  // public void setRole(ERole role) { this.role = role; }
 }

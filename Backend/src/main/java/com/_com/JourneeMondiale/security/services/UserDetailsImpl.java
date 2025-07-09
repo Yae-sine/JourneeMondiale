@@ -3,6 +3,7 @@ package com._com.JourneeMondiale.security.services;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.time.LocalDateTime;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,13 +26,19 @@ public class UserDetailsImpl implements UserDetails {
 
   private Collection<? extends GrantedAuthority> authorities;
 
+  private LocalDateTime createdAt;
+
+  private LocalDateTime updatedAt;
+
   public UserDetailsImpl(Long id, String username, String email, String password,
-      Collection<? extends GrantedAuthority> authorities) {
+      Collection<? extends GrantedAuthority> authorities, LocalDateTime createdAt, LocalDateTime updatedAt) {
     this.id = id;
     this.username = username;
     this.email = email;
     this.password = password;
     this.authorities = authorities;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
   }
 
   public static UserDetailsImpl build(User user) {
@@ -49,7 +56,9 @@ public class UserDetailsImpl implements UserDetails {
         user.getUsername(), 
         user.getEmail(),
         user.getPassword(), 
-        authorities);
+        authorities,
+        user.getCreatedAt(),
+        user.getUpdatedAt());
   }
 
   @Override
@@ -63,6 +72,14 @@ public class UserDetailsImpl implements UserDetails {
 
   public String getEmail() {
     return email;
+  }
+
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public LocalDateTime getUpdatedAt() {
+    return updatedAt;
   }
 
   @Override
