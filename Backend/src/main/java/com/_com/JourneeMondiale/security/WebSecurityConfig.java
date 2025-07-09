@@ -59,6 +59,7 @@ public class WebSecurityConfig {
           auth.requestMatchers("/api/auth/signin", "/api/auth/signup").permitAll()
               // .requestMatchers("/api/auth/me").authenticated()
               .requestMatchers("/api/admin/**").hasRole("ADMIN")
+              // .requestMatchers("/api/payment/**").permitAll() // Allow payment endpoints for now
               .requestMatchers(h2ConsolePath + "/**").permitAll()
               .anyRequest().authenticated()
         );

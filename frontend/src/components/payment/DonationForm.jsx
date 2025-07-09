@@ -10,10 +10,10 @@ import {
 import { FaTimes, FaHeart, FaSpinner } from 'react-icons/fa';
 
 // Initialize Stripe with your publishable key
-const stripePublishableKey = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || 'pk_test_51RizbQRZTDnBzTQvLAW6zPk0jhXTBVfmWEpCWW4ISTL92sjPpNJlPEnUNFAkxt62iEo6CQMR8I4Hn4ANnQDEDJRa00gyDSzqE0';
+const stripePublishableKey = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY;
 
 // Debug logging
-console.log('Stripe publishable key:', stripePublishableKey);
+console.log('Stripe publishable key:', stripePublishableKey ? 'Key loaded successfully' : 'Key missing');
 
 const stripePromise = loadStripe(stripePublishableKey);
 
@@ -35,7 +35,7 @@ const CARD_ELEMENT_OPTIONS = {
   }
 };
 
-// Donation form component that uses Stripe hooks
+// Donation form component using Payment Intents API
 const DonationFormContent = ({ onClose }) => {
   const stripe = useStripe();
   const elements = useElements();
@@ -83,59 +83,73 @@ const DonationFormContent = ({ onClose }) => {
     setError('');
     setMessage('');
 
-    const cardElement = elements.getElement(CardElement);
-
-    // Create token
-    const { error: tokenError, token } = await stripe.createToken(cardElement, {
-      name: name,
-      email: email,
-    });
-
-    if (tokenError) {
-      setError(tokenError.message);
-      setProcessing(false);
-      return;
-    }
-
-    // Send payment to backend
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080'}/api/payment/charge`,
+      // Step 1: Create Payment Intent on backend
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080'}/api/payment/create-payment-intent`,
         {
           amount: Math.round(parseFloat(amount) * 100), // Convert to cents
           currency: 'EUR',
-          stripeToken: token.id,
-          stripeEmail: email,
+          customerEmail: email,
+          customerName: name,
           description: `Don ponctuel de ${amount}€ pour GUSTAVE ROUSSEY`,
         },
         {
           headers: {
             'Content-Type': 'application/json',
           },
-          withCredentials: true, // Include cookies for authentication if needed
+          withCredentials: true,
         }
       );
 
-      const data = response.data;
+      const { clientSecret } = data;
 
-      if (response.status === 200 && data.status === 'succeeded') {
+      // Step 2: Confirm payment with Stripe
+      const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(
+        clientSecret,
+        {
+          payment_method: {
+            card: elements.getElement(CardElement),
+            billing_details: {
+              name: name,
+              email: email,
+            },
+          },
+        }
+      );
+
+      if (confirmError) {
+        setError(confirmError.message);
+      } else if (paymentIntent.status === 'succeeded') {
         setMessage('Merci pour votre don ! Votre paiement a été traité avec succès.');
+        
+        // Optional: Notify backend of successful payment
+        await axios.post(
+          `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080'}/api/payment/confirm`,
+          {
+            paymentIntentId: paymentIntent.id,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            withCredentials: true,
+          }
+        );
+
         // Reset form after successful payment
         setTimeout(() => {
           onClose();
         }, 3000);
       } else {
-        setError(data.message || 'Une erreur est survenue lors du traitement du paiement');
+        setError('Le paiement n\'a pas pu être traité. Veuillez réessayer.');
       }
     } catch (err) {
       if (err.response) {
-        // Server responded with error status
         setError(err.response.data.message || 'Une erreur est survenue lors du traitement du paiement');
       } else if (err.request) {
-        // Request was made but no response received
         setError('Erreur de connexion. Veuillez réessayer.');
       } else {
-        // Something else happened
         setError('Une erreur inattendue est survenue.');
       }
     } finally {
@@ -292,7 +306,6 @@ const DonationFormContent = ({ onClose }) => {
 const DonationForm = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
-  // Check if Stripe key is available
   if (!stripePublishableKey) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
