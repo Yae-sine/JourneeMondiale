@@ -359,4 +359,32 @@ public class SubscriptionService {
         
         return Price.create(priceParams);
     }
+
+    /**
+     * Update subscription status to active in database after successful payment
+     * 
+     * @param subscriptionId Database ID of the subscription to activate
+     * @return Updated SubscriptionResponse
+     */
+    public SubscriptionResponse activateSubscription(Long subscriptionId) {
+        // Find subscription by ID
+        Optional<Subscription> subscriptionOpt = subscriptionRepository.findById(subscriptionId);
+        
+        if (subscriptionOpt.isEmpty()) {
+            throw new IllegalStateException("Subscription not found with ID: " + subscriptionId);
+        }
+
+        Subscription subscription = subscriptionOpt.get();
+        
+        // Check if subscription is already active
+        if ("active".equals(subscription.getStatus())) {
+            return new SubscriptionResponse(subscription);
+        }
+        
+        // Update subscription status to active
+        subscription.setStatus("active");
+        subscriptionRepository.save(subscription);
+
+        return new SubscriptionResponse(subscription);
+    }
 }

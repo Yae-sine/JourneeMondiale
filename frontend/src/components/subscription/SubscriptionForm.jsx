@@ -169,12 +169,24 @@ const SubscriptionFormContent = ({ onClose }) => {
         if (confirmError) {
           setError(confirmError.message);
         } else {
-          setMessage('Abonnement créé avec succès !');
-          setCurrentSubscription(data);
-          setTimeout(() => onClose(), 3000);
+          // Payment confirmed with Stripe, now activate subscription in our database
+          try {
+            const activationResponse = await axios.post(
+              `${process.env.REACT_APP_API_BASE_URL}/api/subscriptions/activate/${data.id}`,
+              {},
+              { withCredentials: true }
+            );
+
+            setMessage('Abonnement créé et activé avec succès !');
+            setCurrentSubscription(activationResponse.data);
+            setTimeout(() => onClose(), 3000);
+          } catch (activationErr) {
+            setError('Paiement confirmé mais erreur lors de l\'activation: ' + 
+              (activationErr.response?.data?.message || activationErr.message));
+          }
         }
       } else {
-        setMessage('Abonnement créé avec succès !');
+        setMessage('Abonnement créé avec succès mais pas encore payé !');
         setCurrentSubscription(data);
         setTimeout(() => onClose(), 3000);
       }
