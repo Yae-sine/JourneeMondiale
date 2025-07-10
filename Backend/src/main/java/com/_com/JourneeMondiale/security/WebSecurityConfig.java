@@ -59,7 +59,9 @@ public class WebSecurityConfig {
           auth.requestMatchers("/api/auth/signin", "/api/auth/signup").permitAll()
               // .requestMatchers("/api/auth/me").authenticated()
               .requestMatchers("/api/admin/**").hasRole("ADMIN")
-              // .requestMatchers("/api/payment/**").permitAll() // Allow payment endpoints for now
+              .requestMatchers("/api/payment/**").permitAll() // Allow payment endpoints for now
+              .requestMatchers("/api/subscriptions/webhook").permitAll() // Allow Stripe webhooks
+              .requestMatchers("/api/subscriptions/**").authenticated() // Require auth for subscription endpoints
               .requestMatchers(h2ConsolePath + "/**").permitAll()
               .anyRequest().authenticated()
         );

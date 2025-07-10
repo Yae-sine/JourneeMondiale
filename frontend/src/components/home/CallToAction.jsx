@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import DonationForm from '../payment/DonationForm';
+import SubscriptionForm from '../subscription/SubscriptionForm';
 
 function CallToAction() {
     const [showDonationForm, setShowDonationForm] = useState(false);
+    const [showSubscriptionForm, setShowSubscriptionForm] = useState(false);
 
     const handleDonationClick = () => {
         setShowDonationForm(true);
@@ -10,6 +12,14 @@ function CallToAction() {
 
     const handleCloseDonationForm = () => {
         setShowDonationForm(false);
+    };
+
+    const handleSubscriptionClick = () => {
+        setShowSubscriptionForm(true);
+    };
+
+    const handleCloseSubscriptionForm = () => {
+        setShowSubscriptionForm(false);
     };
     return (
         <section className="w-full py-10 px-2 md:px-0 bg-[#00ACA8]">
@@ -23,7 +33,10 @@ function CallToAction() {
                         QUE TOUT COMMENCE !
                     </h3>
                     <div className="flex flex-row gap-4 mb-2">
-                        <button className="bg-pink-600 text-white rounded-full px-8 py-3 text-base font-semibold mb-8 shadow-md hover:bg-pink-800 flex items-center donation-button">
+                        <button 
+                            onClick={handleSubscriptionClick}
+                            className="bg-pink-600 text-white rounded-full px-8 py-3 text-base font-semibold mb-8 shadow-md hover:bg-pink-800 flex items-center donation-button transition-colors"
+                        >
                             <img src="images/Landing A/picto coeur.svg" alt="Heart" className="w-5 h-5 mr-2" /> JE FAIS UN DON RÉGULIER
                         </button>
                         <button 
@@ -47,6 +60,12 @@ function CallToAction() {
             <DonationForm 
                 isOpen={showDonationForm} 
                 onClose={handleCloseDonationForm} 
+            />
+
+            {/* Subscription Form Modal */}
+            <SubscriptionForm 
+                isOpen={showSubscriptionForm} 
+                onClose={handleCloseSubscriptionForm} 
             />
         </section>
     );
