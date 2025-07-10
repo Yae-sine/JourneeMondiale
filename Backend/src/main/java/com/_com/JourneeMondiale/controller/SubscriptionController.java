@@ -1,6 +1,5 @@
 package com._com.JourneeMondiale.controller;
 
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +11,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com._com.JourneeMondiale.payload.request.CreateSubscriptionRequest;
-import com._com.JourneeMondiale.payload.request.PaymentIntentConfirmRequest;
 import com._com.JourneeMondiale.payload.request.UpdateSubscriptionRequest;
 import com._com.JourneeMondiale.payload.response.MessageResponse;
 import com._com.JourneeMondiale.payload.response.SubscriptionResponse;
@@ -169,102 +166,4 @@ public class SubscriptionController {
         }
     }
 
-    /**
-     * Confirm a payment intent for subscription
-     * 
-     * @param request Payment intent confirmation request
-     * @param userDetails Authenticated user details
-     * @return ResponseEntity with payment intent status
-     */
-    @PostMapping("/confirm-payment")
-    public ResponseEntity<?> confirmPaymentIntent(
-            @RequestBody PaymentIntentConfirmRequest request,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        
-        if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new MessageResponse("User not authenticated"));
-        }
-
-        try {
-            com.stripe.model.PaymentIntent paymentIntent = paymentService.confirmPaymentIntent(
-                request.getPaymentIntentId(), 
-                request.getPaymentMethodId()
-            );
-            
-            Map<String, Object> response = Map.of(
-                "status", paymentIntent.getStatus(),
-                "paymentIntentId", paymentIntent.getId(),
-                "clientSecret", paymentIntent.getClientSecret()
-            );
-            
-            return ResponseEntity.ok(response);
-            
-        } catch (StripeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new MessageResponse("Payment confirmation failed: " + e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new MessageResponse("An unexpected error occurred"));
-        }
-    }
-
-    /**
-     * Get payment intent status
-     * 
-     * @param paymentIntentId Payment intent ID
-     * @param userDetails Authenticated user details
-     * @return ResponseEntity with payment intent status
-     */
-    @GetMapping("/payment-status")
-    public ResponseEntity<?> getPaymentIntentStatus(
-            @RequestParam String paymentIntentId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        
-        if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new MessageResponse("User not authenticated"));
-        }
-
-        try {
-            com.stripe.model.PaymentIntent paymentIntent = paymentService.getPaymentIntentStatus(paymentIntentId);
-            
-            Map<String, Object> response = Map.of(
-                "status", paymentIntent.getStatus(),
-                "paymentIntentId", paymentIntent.getId(),
-                "amount", paymentIntent.getAmount(),
-                "currency", paymentIntent.getCurrency()
-            );
-            
-            return ResponseEntity.ok(response);
-            
-        } catch (StripeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new MessageResponse("Failed to get payment status: " + e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new MessageResponse("An unexpected error occurred"));
-        }
-    }
-
-    /**
-     * Handle Stripe webhook events for subscriptions
-     * 
-     * @param payload Raw webhook payload from Stripe
-     * @param sigHeader Stripe signature header for verification
-     * @return ResponseEntity with processing result
-     */
-    @PostMapping("/webhook")
-    public ResponseEntity<String> handleSubscriptionWebhook(
-            @RequestBody String payload,
-            @RequestHeader("Stripe-Signature") String sigHeader) {
-        
-        try {
-            String result = paymentService.handleSubscriptionWebhook(payload, sigHeader);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("Webhook error: " + e.getMessage());
-        }
-    }
 }

@@ -150,7 +150,7 @@ const SubscriptionFormContent = ({ onClose }) => {
         subscriptionData,
         { withCredentials: true }
       );
-
+      console.log(data)
       // If we have a client secret, we need to confirm the payment
       if (data.clientSecret) {
         const { error: confirmError } = await stripe.confirmCardPayment(

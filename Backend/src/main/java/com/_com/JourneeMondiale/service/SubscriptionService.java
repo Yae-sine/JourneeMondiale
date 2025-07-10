@@ -17,12 +17,10 @@ import com._com.JourneeMondiale.repository.SubscriptionRepository;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
-import com.stripe.model.Invoice;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.Price;
 import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.CustomerSearchParams;
-import com.stripe.param.PaymentIntentConfirmParams;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.SubscriptionCreateParams;
 import com.stripe.param.SubscriptionUpdateParams;
@@ -237,34 +235,6 @@ public class SubscriptionService {
         return subscription.map(SubscriptionResponse::new);
     }
 
-    /**
-     * Handles webhook events from Stripe to keep subscription status in sync
-     * 
-     * @param payload Raw webhook payload
-     * @param signature Stripe signature header
-     * @return Processing result message
-     */
-    public String handleSubscriptionWebhook(String payload, String signature) {
-        try {
-            // TODO: Implement webhook signature verification
-            // com.stripe.model.Event event = Webhook.constructEvent(payload, signature, webhookSecret);
-            
-            // For now, just log the webhook
-            System.out.println("Subscription webhook received with signature: " + signature);
-            
-            // TODO: Parse event and handle different subscription event types:
-            // - customer.subscription.created
-            // - customer.subscription.updated
-            // - customer.subscription.deleted
-            // - invoice.payment_succeeded
-            // - invoice.payment_failed
-            
-            return "Webhook received";
-        } catch (Exception e) {
-            System.err.println("Subscription webhook processing error: " + e.getMessage());
-            throw new RuntimeException("Webhook processing failed");
-        }
-    }
 
     /**
      * Get or create a Stripe customer for the user
@@ -388,35 +358,5 @@ public class SubscriptionService {
             .build();
         
         return Price.create(priceParams);
-    }
-
-    /**
-     * Confirm a payment intent for subscription
-     * 
-     * @param paymentIntentId Payment intent ID to confirm
-     * @param paymentMethodId Payment method ID to use for confirmation
-     * @return Confirmed PaymentIntent
-     * @throws StripeException if Stripe API call fails
-     */
-    public PaymentIntent confirmPaymentIntent(String paymentIntentId, String paymentMethodId) throws StripeException {
-        PaymentIntent paymentIntent = PaymentIntent.retrieve(paymentIntentId);
-        
-        // Confirm the payment intent with the provided payment method
-        PaymentIntentConfirmParams confirmParams = PaymentIntentConfirmParams.builder()
-            .setPaymentMethod(paymentMethodId)
-            .build();
-        
-        return paymentIntent.confirm(confirmParams);
-    }
-
-    /**
-     * Get payment intent status and details
-     * 
-     * @param paymentIntentId Payment intent ID
-     * @return PaymentIntent object with current status
-     * @throws StripeException if Stripe API call fails
-     */
-    public PaymentIntent getPaymentIntentStatus(String paymentIntentId) throws StripeException {
-        return PaymentIntent.retrieve(paymentIntentId);
     }
 }
