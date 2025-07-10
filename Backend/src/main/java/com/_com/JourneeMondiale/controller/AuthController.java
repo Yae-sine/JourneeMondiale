@@ -66,6 +66,8 @@ public class AuthController {
         .body(new UserInfoResponse(userDetails.getId(),
                                    userDetails.getUsername(),
                                    userDetails.getEmail(),
+                                   userDetails.getFirstName(),
+                                   userDetails.getLastName(),
                                    role,
                                    userDetails.getCreatedAt(),
                                    userDetails.getUpdatedAt()));
@@ -118,8 +120,9 @@ public class AuthController {
     return ResponseEntity.ok(new UserInfoResponse(
       userDetails.getId(),
       userDetails.getUsername(),
-      // you can add First name and last name if needed
       userDetails.getEmail(),
+      userDetails.getFirstName(),
+      userDetails.getLastName(),
       role,
       userDetails.getCreatedAt(),
       userDetails.getUpdatedAt()

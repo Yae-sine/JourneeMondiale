@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { loadStripe } from '@stripe/stripe-js';
 import {
@@ -42,13 +42,43 @@ const DonationFormContent = ({ onClose }) => {
   
   const [amount, setAmount] = useState('50');
   const [customAmount, setCustomAmount] = useState('');
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
+  const [userInfo, setUserInfo] = useState(null);
+  const [loadingUser, setLoadingUser] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
   const predefinedAmounts = ['20', '50', '100', '200'];
+
+  // Fetch current user information
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        setLoadingUser(true);
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080'}/api/auth/me`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            withCredentials: true,
+          }
+        );
+        setUserInfo(response.data);
+      } catch (err) {
+        console.error('Failed to fetch user info:', err);
+        if (err.response?.status === 401) {
+          setError('Vous devez être connecté pour faire un don. Veuillez vous connecter et réessayer.');
+        } else {
+          setError('Erreur lors du chargement des informations utilisateur.');
+        }
+      } finally {
+        setLoadingUser(false);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
   const handleAmountSelect = (selectedAmount) => {
     setAmount(selectedAmount);
@@ -74,8 +104,8 @@ const DonationFormContent = ({ onClose }) => {
       return;
     }
 
-    if (!email || !name) {
-      setError('Veuillez remplir tous les champs requis');
+    if (!userInfo) {
+      setError('Informations utilisateur non disponibles. Veuillez rafraîchir la page.');
       return;
     }
 
@@ -90,8 +120,8 @@ const DonationFormContent = ({ onClose }) => {
         {
           amount: Math.round(parseFloat(amount) * 100), // Convert to cents
           currency: 'EUR',
-          customerEmail: email,
-          customerName: name,
+          customerEmail: userInfo.email,
+          customerName: `${userInfo.firstName} ${userInfo.lastName}`,
           description: `Don ponctuel de ${amount}€ pour GUSTAVE ROUSSEY`,
         },
         {
@@ -111,8 +141,8 @@ const DonationFormContent = ({ onClose }) => {
           payment_method: {
             card: elements.getElement(CardElement),
             billing_details: {
-              name: name,
-              email: email,
+              name: `${userInfo.firstName} ${userInfo.lastName}`,
+              email: userInfo.email,
             },
           },
         }
@@ -174,8 +204,25 @@ const DonationFormContent = ({ onClose }) => {
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        {/* Loading State */}
+        {loadingUser ? (
+          <div className="p-6 text-center">
+            <FaSpinner className="animate-spin mx-auto mb-4 text-2xl text-[#00ACA8]" />
+            <p className="text-gray-600">Chargement des informations utilisateur...</p>
+          </div>
+        ) : (
+          <>
+            {/* User Info Display */}
+            {userInfo && (
+              <div className="p-6 border-b bg-gray-50">
+                <p className="text-sm text-gray-600 mb-1">Don effectué par :</p>
+                <p className="font-medium text-gray-800">{userInfo.firstName} {userInfo.lastName}</p>
+                <p className="text-sm text-gray-600">{userInfo.email}</p>
+              </div>
+            )}
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Amount Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -208,35 +255,6 @@ const DonationFormContent = ({ onClose }) => {
             />
           </div>
 
-          {/* Personal Information */}
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Nom complet *
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00ACA8] focus:border-transparent"
-                placeholder="Votre nom complet"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Adresse email *
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00ACA8] focus:border-transparent"
-                placeholder="votre@email.com"
-              />
-            </div>
-          </div>
 
           {/* Card Information */}
           <div>
@@ -297,6 +315,8 @@ const DonationFormContent = ({ onClose }) => {
             )}
           </div>
         </form>
+          </>
+        )}
       </div>
     </div>
   );

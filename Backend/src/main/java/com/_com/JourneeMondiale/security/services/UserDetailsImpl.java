@@ -21,6 +21,10 @@ public class UserDetailsImpl implements UserDetails {
 
   private String email;
 
+  private String firstName;
+
+  private String lastName;
+
   @JsonIgnore
   private String password;
 
@@ -30,11 +34,13 @@ public class UserDetailsImpl implements UserDetails {
 
   private LocalDateTime updatedAt;
 
-  public UserDetailsImpl(Long id, String username, String email, String password,
+  public UserDetailsImpl(Long id, String username, String email, String firstName, String lastName, String password,
       Collection<? extends GrantedAuthority> authorities, LocalDateTime createdAt, LocalDateTime updatedAt) {
     this.id = id;
     this.username = username;
     this.email = email;
+    this.firstName = firstName;
+    this.lastName = lastName;
     this.password = password;
     this.authorities = authorities;
     this.createdAt = createdAt;
@@ -55,6 +61,8 @@ public class UserDetailsImpl implements UserDetails {
         user.getId(), 
         user.getUsername(), 
         user.getEmail(),
+        user.getFirstName(),
+        user.getLastName(),
         user.getPassword(), 
         authorities,
         user.getCreatedAt(),
@@ -72,6 +80,14 @@ public class UserDetailsImpl implements UserDetails {
 
   public String getEmail() {
     return email;
+  }
+
+  public String getFirstName() {
+    return firstName;
+  }
+
+  public String getLastName() {
+    return lastName;
   }
 
   public LocalDateTime getCreatedAt() {
