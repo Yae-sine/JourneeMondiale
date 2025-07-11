@@ -6,7 +6,7 @@ import {
   useStripe,
   useElements
 } from '@stripe/react-stripe-js';
-import { FaHeart, FaSpinner, FaArrowLeft } from 'react-icons/fa';
+import { FaHeart, FaSpinner, FaArrowLeft, FaUser, FaEnvelope } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import withAuth from '../components/auth/withAuth';
@@ -130,11 +130,6 @@ const DonationPageContent = () => {
             withCredentials: true,
           }
         );
-
-        // Reset form after successful payment
-        setTimeout(() => {
-          navigate('/');
-        }, 3000);
       } else {
         setError('Le paiement n\'a pas pu être traité. Veuillez réessayer.');
       }
@@ -152,10 +147,10 @@ const DonationPageContent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] to-[#e0f7fa] flex flex-col">
       {/* Header */}
-      <div className="bg-[#00ACA8] text-white py-8">
-        <div className="max-w-4xl mx-auto px-6">
+      <div className="bg-gradient-to-r from-[#00ACA8] to-[#007c7a] text-white py-10 shadow-md">
+        <div className="max-w-4xl mx-auto px-6 flex flex-col gap-2">
           <button
             onClick={() => navigate('/')}
             className="flex items-center text-white hover:text-gray-200 mb-4 transition-colors"
@@ -163,72 +158,72 @@ const DonationPageContent = () => {
             <FaArrowLeft className="mr-2" />
             Retour à l'accueil
           </button>
-          <div className="flex items-center">
-            <FaHeart className="mr-3 text-2xl" />
-            <h1 className="text-3xl font-bold">Faire un don ponctuel</h1>
-          </div>
-          <p className="mt-2 text-lg opacity-90">
+          <h1 className="text-4xl font-extrabold tracking-tight mb-1">Faire un don ponctuel</h1>
+          <p className="text-lg opacity-90 font-medium">
             Soutenez la recherche contre le cancer chez les jeunes adultes
           </p>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-grow max-w-4xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div className="flex-grow max-w-5xl mx-auto px-4 py-12 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {/* Left Column - Information */}
-          <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
-              Votre don fait la différence
-            </h2>
-            
-            <div className="space-y-6">
-              <div className="bg-gray-50 p-6 rounded-lg">
-                <h3 className="font-semibold text-gray-800 mb-2">Informations du donateur</h3>
-                <div className="space-y-2 text-gray-600">
-                  <p><strong>Nom :</strong> {user?.firstName} {user?.lastName}</p>
-                  <p><strong>Email :</strong> {user?.email}</p>
+          <div className="flex flex-col gap-6">
+            <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+              <div className="flex items-center mb-4">
+                <FaHeart className="text-[#00ACA8] text-2xl mr-3" />
+                <h2 className="text-2xl font-bold text-gray-800">Votre don fait la différence</h2>
+              </div>
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#e0f7fa]">
+                    <FaUser className="w-5 h-5 text-[#00ACA8]" />
+                  </span>
+                  <div>
+                    <p className="font-semibold text-gray-700">Nom :</p>
+                    <p className="text-gray-600">{user?.firstName} {user?.lastName}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#e0f7fa]">
+                    <FaEnvelope className="w-5 h-5 text-[#00ACA8]" />
+                  </span>
+                  <div>
+                    <p className="font-semibold text-gray-700">Email :</p>
+                    <p className="text-gray-600">{user?.email}</p>
+                  </div>
                 </div>
               </div>
-
-              <div className="bg-[#00ACA8] bg-opacity-10 p-6 rounded-lg border border-[#00ACA8] border-opacity-30">
-                <h3 className="font-semibold text-[#00ACA8] mb-3">Impact de votre don</h3>
-                <ul className="space-y-2 text-gray-700">
-                  <li>• Financement de la recherche exploratoire</li>
-                  <li>• Développement de nouveaux traitements</li>
-                  <li>• Amélioration de la qualité de vie des patients</li>
-                  <li>• Prévention et détection précoce</li>
-                </ul>
-              </div>
-
-              <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                <p className="text-yellow-800 text-sm">
-                  <strong>Avantage fiscal :</strong> Votre don ouvre droit à une réduction d'impôt de 66% 
-                  dans la limite de 20% de votre revenu imposable.
-                </p>
-              </div>
+            </div>
+            <div className="bg-[#f1f8f9] rounded-2xl p-6 border border-[#e0f7fa] shadow-sm">
+              <h3 className="font-semibold text-[#00ACA8] mb-2">Pourquoi donner ?</h3>
+              <ul className="list-disc list-inside text-gray-700 space-y-1">
+                <li>Votre don soutient la recherche et l’innovation médicale.</li>
+                <li>Chaque euro compte pour aider les jeunes adultes atteints de cancer.</li>
+              </ul>
             </div>
           </div>
 
           {/* Right Column - Donation Form */}
-          <div className="bg-white border border-gray-200 rounded-lg p-8 shadow-sm">
-            <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="bg-white border border-gray-100 rounded-2xl p-10 shadow-xl flex flex-col">
+            <form onSubmit={handleSubmit} className="space-y-8">
               {/* Amount Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Montant du don (€) *
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  Montant du don (€) <span className="text-[#00ACA8]">*</span>
                 </label>
-                <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="flex flex-wrap gap-3 mb-4">
                   {predefinedAmounts.map((presetAmount) => (
                     <button
                       key={presetAmount}
                       type="button"
                       onClick={() => handleAmountSelect(presetAmount)}
-                      className={`p-3 text-center border rounded-lg transition-colors font-medium ${
-                        amount === presetAmount && !customAmount
-                          ? 'border-[#00ACA8] bg-[#00ACA8] text-white'
-                          : 'border-gray-300 hover:border-[#00ACA8] text-gray-700'
-                      }`}
+                      className={`px-5 py-2 rounded-full border font-medium transition-colors shadow-sm
+                        ${amount === presetAmount && !customAmount
+                          ? 'bg-[#00ACA8] text-white border-[#00ACA8]'
+                          : 'bg-white text-gray-700 border-gray-300 hover:border-[#00ACA8]'}
+                      `}
                     >
                       {presetAmount}€
                     </button>
@@ -247,11 +242,16 @@ const DonationPageContent = () => {
 
               {/* Card Information */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Informations de carte *
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Informations de carte <span className="text-[#00ACA8]">*</span>
                 </label>
-                <div className="p-4 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-[#00ACA8] focus-within:border-transparent">
-                  <CardElement options={CARD_ELEMENT_OPTIONS} />
+                <div className="p-4 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-[#00ACA8] focus-within:border-transparent flex items-center gap-3 bg-[#f8fafc]">
+                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#e0f7fa] mr-2">
+                    <svg className="w-5 h-5 text-[#00ACA8]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17 9V7a5 5 0 0 0-10 0v2"/><rect width="20" height="12" x="2" y="9" rx="2"/><path d="M6 15h.01"/></svg>
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <CardElement options={CARD_ELEMENT_OPTIONS} className="w-full block" />
+                  </div>
                 </div>
               </div>
 
@@ -273,7 +273,7 @@ const DonationPageContent = () => {
               <button
                 type="submit"
                 disabled={!stripe || processing}
-                className="w-full bg-[#00ACA8] text-white py-4 px-6 rounded-lg font-semibold hover:bg-[#008a87] focus:outline-none focus:ring-2 focus:ring-[#00ACA8] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                className="w-full bg-gradient-to-r from-[#00ACA8] to-[#007c7a] text-white py-4 px-6 rounded-lg font-semibold hover:from-[#008a87] hover:to-[#005f5c] focus:outline-none focus:ring-2 focus:ring-[#00ACA8] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center text-lg shadow-md"
               >
                 {processing ? (
                   <>
@@ -289,16 +289,23 @@ const DonationPageContent = () => {
               </button>
 
               {/* Security Notice */}
-              <div className="text-xs text-gray-500 text-center space-y-1">
-                <p>🔒 Paiement sécurisé par Stripe</p>
+              <div className="text-xs text-gray-500 text-center space-y-1 mt-2">
+                <p className="flex items-center justify-center gap-1">
+                  <svg className="w-4 h-4 text-[#00ACA8]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v.01"/><rect width="20" height="12" x="2" y="7" rx="2"/><path d="M17 9V7a5 5 0 0 0-10 0v2"/></svg>
+                  Paiement sécurisé par Stripe
+                </p>
                 <p>Vos données bancaires sont protégées et ne sont pas stockées sur nos serveurs.</p>
+                <div className="flex items-center justify-center mt-1">
+                  <img src="https://stripe.com/img/v3/home/social.png" alt="Stripe" className="h-5 mr-2" />
+                  <span className="text-gray-400">Powered by Stripe</span>
+                </div>
               </div>
             </form>
           </div>
         </div>
       </div>
       
-      {/* Footer - will stick to bottom */}
+      {/* Footer */}
       <Footer />
     </div>
   );

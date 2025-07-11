@@ -6,7 +6,7 @@ import {
   useStripe,
   useElements
 } from '@stripe/react-stripe-js';
-import { FaCrown, FaSpinner, FaArrowLeft, FaExclamationTriangle } from 'react-icons/fa';
+import { FaCrown, FaSpinner, FaArrowLeft, FaExclamationTriangle, FaUser, FaEnvelope } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import withAuth from '../components/auth/withAuth';
@@ -164,9 +164,6 @@ const SubscriptionPageContent = () => {
 
             setMessage('Abonnement créé et activé avec succès !');
             setCurrentSubscription(activationResponse.data);
-            setTimeout(() => {
-              navigate('/');
-            }, 3000);
           } catch (activationErr) {
             setError('Paiement confirmé mais erreur lors de l\'activation: ' + 
               (activationErr.response?.data?.message || activationErr.message));
@@ -175,9 +172,6 @@ const SubscriptionPageContent = () => {
       } else {
         setMessage('Abonnement créé avec succès mais pas encore payé !');
         setCurrentSubscription(data);
-        setTimeout(() => {
-          navigate('/');
-        }, 3000);
       }
 
     } catch (err) {
@@ -205,10 +199,6 @@ const SubscriptionPageContent = () => {
 
       setMessage('Abonnement mis à jour avec succès !');
       setCurrentSubscription(data);
-      setTimeout(() => {
-        navigate('/');
-      }, 3000);
-
     } catch (err) {
       setError(err.response?.data?.message || 'Erreur lors de la mise à jour de l\'abonnement');
     } finally {
@@ -232,9 +222,6 @@ const SubscriptionPageContent = () => {
         'Abonnement programmé pour annulation à la fin de la période.'
       );
       setCurrentSubscription(data);
-      setTimeout(() => {
-        navigate('/');
-      }, 3000);
 
     } catch (err) {
       setError(err.response?.data?.message || 'Erreur lors de l\'annulation de l\'abonnement');
@@ -255,10 +242,10 @@ const SubscriptionPageContent = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] to-[#e0f7fa] flex flex-col">
       {/* Header */}
-      <div className="bg-[#00ACA8] text-white py-8">
-        <div className="max-w-6xl mx-auto px-6">
+      <div className="bg-gradient-to-r from-[#00ACA8] to-[#007c7a] text-white py-10 shadow-md">
+        <div className="max-w-6xl mx-auto px-6 flex flex-col gap-2">
           <button
             onClick={() => navigate('/')}
             className="flex items-center text-white hover:text-gray-200 mb-4 transition-colors"
@@ -266,104 +253,118 @@ const SubscriptionPageContent = () => {
             <FaArrowLeft className="mr-2" />
             Retour à l'accueil
           </button>
-          <div className="flex items-center">
-            <FaCrown className="mr-3 text-2xl" />
-            <h1 className="text-3xl font-bold">
-              {currentSubscription ? 'Gérer votre abonnement' : 'Choisir un plan d\'abonnement'}
-            </h1>
-          </div>
-          <p className="mt-2 text-lg opacity-90">
+          <h1 className="text-4xl font-extrabold tracking-tight mb-1">
+            {currentSubscription ? 'Gérer votre abonnement' : 'Choisir un plan d\'abonnement'}
+          </h1>
+          <p className="text-lg opacity-90 font-medium">
             Soutenez régulièrement la recherche contre le cancer chez les jeunes adultes
           </p>
         </div>
       </div>
 
-      {/* Current Subscription Info */}
-      {currentSubscription && (
-        <div className="bg-blue-50 border-b">
-          <div className="max-w-6xl mx-auto px-6 py-6">
-            <h2 className="font-semibold text-gray-800 mb-4">Abonnement actuel</h2>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-              <div>
-                <span className="text-gray-600">Plan:</span>
-                <span className="ml-2 font-medium">{currentSubscription.planName}</span>
-              </div>
-              <div>
-                <span className="text-gray-600">Prix:</span>
-                <span className="ml-2 font-medium">{currentSubscription.amount}€/{currentSubscription.interval}</span>
-              </div>
-              <div>
-                <span className="text-gray-600">Statut:</span>
-                <span className={`ml-2 font-medium ${
-                  currentSubscription.status === 'active' ? 'text-green-600' : 'text-red-600'
-                }`}>
-                  {currentSubscription.status}
-                </span>
-              </div>
-              <div>
-                <span className="text-gray-600">Renouvellement:</span>
-                <span className="ml-2 font-medium">
-                  {new Date(currentSubscription.currentPeriodEnd).toLocaleDateString()}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Main Content */}
-      <div className="flex-grow max-w-6xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Information */}
-          <div className="lg:col-span-1">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
-              Pourquoi s'abonner ?
-            </h2>
-            
-            <div className="space-y-6">
-              <div className="bg-gray-50 p-6 rounded-lg">
-                <h3 className="font-semibold text-gray-800 mb-2">Informations du donateur</h3>
-                <div className="space-y-2 text-gray-600">
-                  <p><strong>Nom :</strong> {user?.firstName} {user?.lastName}</p>
-                  <p><strong>Email :</strong> {user?.email}</p>
+      <div className="flex-grow max-w-6xl mx-auto px-4 py-12 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          {/* Left Column - Votre Abonnement (Current Subscription Info) */}
+          <div className="flex flex-col gap-6 md:col-span-1">
+            <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+              <div className="flex items-center mb-4">
+                <FaCrown className="text-[#00ACA8] text-2xl mr-3" />
+                <h2 className="text-2xl font-bold text-gray-800">{currentSubscription ? 'Votre abonnement' : 'Vos informations'}</h2>
+              </div>
+              {currentSubscription ? (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#e0f7fa]">
+                      <FaUser className="w-5 h-5 text-[#00ACA8]" />
+                    </span>
+                    <div>
+                      <p className="font-semibold text-gray-700">Nom :</p>
+                      <p className="text-gray-600">{user?.firstName} {user?.lastName}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#e0f7fa]">
+                      <FaEnvelope className="w-5 h-5 text-[#00ACA8]" />
+                    </span>
+                    <div>
+                      <p className="font-semibold text-gray-700">Email :</p>
+                      <p className="text-gray-600">{user?.email}</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1 mt-4">
+                    <div>
+                      <span className="text-gray-600">Plan:</span>
+                      <span className="ml-2 font-medium">{currentSubscription.planName}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Prix:</span>
+                      <span className="ml-2 font-medium">{currentSubscription.amount}€/{currentSubscription.interval}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Statut:</span>
+                      <span className={`ml-2 font-medium ${
+                        currentSubscription.status === 'active' ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        {currentSubscription.status}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Renouvellement:</span>
+                      <span className="ml-2 font-medium">
+                        {new Date(currentSubscription.currentPeriodEnd).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-
-              <div className="bg-[#00ACA8] bg-opacity-10 p-6 rounded-lg border border-[#00ACA8] border-opacity-30">
-                <h3 className="font-semibold text-[#00ACA8] mb-3">Avantages de l'abonnement</h3>
-                <ul className="space-y-2 text-gray-700">
-                  <li>• Soutien régulier et prévisible</li>
-                  <li>• Financement de projets à long terme</li>
-                  <li>• Annulation possible à tout moment</li>
-                  <li>• Réduction d'impôt de 66%</li>
-                </ul>
-              </div>
-
-              <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                <p className="text-yellow-800 text-sm">
-                  <strong>Gestion flexible :</strong> Vous pouvez modifier ou annuler votre abonnement 
-                  à tout moment.
-                </p>
-              </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#e0f7fa]">
+                      <FaUser className="w-5 h-5 text-[#00ACA8]" />
+                    </span>
+                    <div>
+                      <p className="font-semibold text-gray-700">Nom :</p>
+                      <p className="text-gray-600">{user?.firstName} {user?.lastName}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#e0f7fa]">
+                      <FaEnvelope className="w-5 h-5 text-[#00ACA8]" />
+                    </span>
+                    <div>
+                      <p className="font-semibold text-gray-700">Email :</p>
+                      <p className="text-gray-600">{user?.email}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="bg-[#f1f8f9] rounded-2xl p-6 border border-[#e0f7fa] shadow-sm">
+              <h3 className="font-semibold text-[#00ACA8] mb-2">Pourquoi s'abonner ?</h3>
+              <ul className="list-disc list-inside text-gray-700 space-y-1">
+                <li>Votre abonnement soutient la recherche et l’innovation médicale.</li>
+                <li>Chaque euro compte pour aider les jeunes adultes atteints de cancer.</li>
+                <li>Vous pouvez modifier ou annuler à tout moment.</li>
+              </ul>
             </div>
           </div>
 
-          {/* Right Column - Plans and Form */}
-          <div className="lg:col-span-2">
+          {/* Right Column - Stripe Payment Form (cloned from DonationPage) */}
+          <div className="md:col-span-2 flex flex-col gap-8">
             {/* Plans Selection */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               {SUBSCRIPTION_PLANS.map((plan, index) => (
                 <div 
                   key={plan.id || `plan-${index}`}
-                  className={`border rounded-lg p-6 cursor-pointer transition-all ${
-                    selectedPlan?.id === plan.id 
+                  className={`border rounded-2xl p-6 cursor-pointer transition-all shadow-sm
+                    ${selectedPlan?.id === plan.id 
                       ? 'border-[#00ACA8] bg-[#00ACA8] bg-opacity-10' 
-                      : 'border-gray-300 hover:border-[#00ACA8]'
-                  } ${
-                    currentSubscription?.stripePriceId === plan.id 
+                      : 'border-gray-300 hover:border-[#00ACA8]'}
+                    ${currentSubscription?.stripePriceId === plan.id 
                       ? 'ring-2 ring-green-500' 
-                      : ''
-                  }`}
+                      : ''}
+                  `}
                   onClick={() => {
                     setSelectedPlan(plan);
                     setShowCustomInput(false);
@@ -383,14 +384,13 @@ const SubscriptionPageContent = () => {
                   </div>
                 </div>
               ))}
-              
               {/* Custom Amount Option */}
               <div 
-                className={`border rounded-lg p-6 cursor-pointer transition-all ${
-                  showCustomInput 
+                className={`border rounded-2xl p-6 cursor-pointer transition-all shadow-sm
+                  ${showCustomInput 
                     ? 'border-[#00ACA8] bg-[#00ACA8] bg-opacity-10' 
-                    : 'border-gray-300 hover:border-[#00ACA8]'
-                }`}
+                    : 'border-gray-300 hover:border-[#00ACA8]'}
+                `}
                 onClick={() => {
                   setShowCustomInput(true);
                   setSelectedPlan(null);
@@ -407,9 +407,9 @@ const SubscriptionPageContent = () => {
 
             {/* Custom Amount Input */}
             {showCustomInput && (
-              <div className="mb-8">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Montant mensuel (€) *
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Montant mensuel (€) <span className="text-[#00ACA8]">*</span>
                 </label>
                 <input
                   type="number"
@@ -424,27 +424,29 @@ const SubscriptionPageContent = () => {
               </div>
             )}
 
-            {/* Payment Method (only for new subscriptions) */}
+            {/* Stripe Payment Form (cloned from DonationPage) */}
             {!currentSubscription && (selectedPlan || (showCustomInput && customAmount)) && (
-              <div className="mb-8">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Méthode de paiement *
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Informations de carte <span className="text-[#00ACA8]">*</span>
                 </label>
-                <div className="p-4 border border-gray-300 rounded-lg">
-                  <CardElement options={CARD_ELEMENT_OPTIONS} />
+                <div className="p-4 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-[#00ACA8] focus-within:border-transparent flex items-center gap-3 bg-[#f8fafc]">
+                  <div className="flex-1 min-w-0">
+                    <CardElement options={CARD_ELEMENT_OPTIONS} className="w-full block" />
+                  </div>
                 </div>
               </div>
             )}
 
             {/* Error/Success Messages */}
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
                 <p className="text-red-600 text-sm">{error}</p>
               </div>
             )}
 
             {message && (
-              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
                 <p className="text-green-600 text-sm">{message}</p>
               </div>
             )}
@@ -455,7 +457,7 @@ const SubscriptionPageContent = () => {
                 <button
                   onClick={() => handleCreateSubscription(selectedPlan.id, selectedPlan.name)}
                   disabled={!stripe || processing}
-                  className="w-full bg-[#00ACA8] text-white py-4 px-6 rounded-lg font-semibold hover:bg-[#008a87] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                  className="w-full bg-gradient-to-r from-[#00ACA8] to-[#007c7a] text-white py-4 px-6 rounded-lg font-semibold hover:from-[#008a87] hover:to-[#005f5c] focus:outline-none focus:ring-2 focus:ring-[#00ACA8] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-lg shadow-md transition-colors"
                 >
                   {processing ? (
                     <>
@@ -475,7 +477,7 @@ const SubscriptionPageContent = () => {
                 <button
                   onClick={() => handleCreateSubscription(null, `${customAmount}€`)}
                   disabled={!stripe || processing}
-                  className="w-full bg-[#00ACA8] text-white py-4 px-6 rounded-lg font-semibold hover:bg-[#008a87] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                  className="w-full bg-gradient-to-r from-[#00ACA8] to-[#007c7a] text-white py-4 px-6 rounded-lg font-semibold hover:from-[#008a87] hover:to-[#005f5c] focus:outline-none focus:ring-2 focus:ring-[#00ACA8] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-lg shadow-md transition-colors"
                 >
                   {processing ? (
                     <>
@@ -495,7 +497,7 @@ const SubscriptionPageContent = () => {
                 <button
                   onClick={() => handleUpdateSubscription(selectedPlan.id, selectedPlan.name)}
                   disabled={processing}
-                  className="w-full bg-blue-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                  className="w-full bg-blue-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-lg shadow-md transition-colors"
                 >
                   {processing ? (
                     <>
@@ -514,7 +516,7 @@ const SubscriptionPageContent = () => {
                 <button
                   onClick={() => handleCancelSubscription(false)}
                   disabled={processing}
-                  className="w-full bg-red-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                  className="w-full bg-red-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-lg shadow-md transition-colors"
                 >
                   {processing ? (
                     <>
@@ -533,15 +535,18 @@ const SubscriptionPageContent = () => {
 
             {/* Security Notice */}
             {!currentSubscription && (
-              <div className="mt-8 text-xs text-gray-500 text-center">
-                <p>🔒 Paiement sécurisé par Stripe - Annulation possible à tout moment</p>
+              <div className="mt-8 text-xs text-gray-500 text-center space-y-1">
+                <p className="flex items-center justify-center gap-1">
+                  <svg className="w-4 h-4 text-[#00ACA8]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v.01"/><rect width="20" height="12" x="2" y="7" rx="2"/><path d="M17 9V7a5 5 0 0 0-10 0v2"/></svg>
+                  Paiement sécurisé par Stripe - Annulation possible à tout moment
+                </p>
               </div>
             )}
           </div>
         </div>
       </div>
       
-      {/* Footer - will stick to bottom */}
+      {/* Footer */}
       <Footer />
     </div>
   );

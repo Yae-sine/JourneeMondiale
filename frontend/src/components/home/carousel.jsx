@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import SubscriptionForm from '../subscription/SubscriptionForm';
 
 function Carousel() {
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [showSubscriptionForm, setShowSubscriptionForm] = useState(false);
     const totalSlides = 2;
 
     const nextSlide = () => {
@@ -12,14 +10,6 @@ function Carousel() {
 
     const previousSlide = () => {
         setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
-    };
-
-    const handleSubscriptionClick = () => {
-        setShowSubscriptionForm(true);
-    };
-
-    const handleCloseSubscriptionForm = () => {
-        setShowSubscriptionForm(false);
     };
 
     useEffect(() => {
@@ -66,7 +56,6 @@ function Carousel() {
                                     JE FAIS UN DON PONCTUEL
                                 </button>
                                 <button 
-                                    onClick={handleSubscriptionClick}
                                     className="w-80 h-20 bg-white text-pink-700 rounded-2xl text-lg font-bold uppercase flex items-center justify-center shadow-md ml-4 transition-colors donation-button"
                                 >
                                     JE PRÉFÈRE FAIRE UN DON RÉGULIER
@@ -122,7 +111,6 @@ function Carousel() {
                                             <button className="bg-white text-pink-600 font-bold opacity-80 rounded-2xl w-[211px] h-[79px] text-2xl uppercase flex items-center justify-center transition-all amount-button">Montant libre</button>
                                         </div>
                                         <button 
-                                            onClick={handleSubscriptionClick}
                                             className="bg-pink-600 text-white rounded-2xl w-80 h-[79px] text-lg font-bold uppercase flex items-center justify-center shadow-md ml-2 transition-colors donation-button"
                                         >
                                             <img src="images/Landing A/picto coeur.svg" alt="Heart" className="w-5 h-5 mr-2" /> 
@@ -139,12 +127,6 @@ function Carousel() {
             
             <button className="absolute top-1/2 left-8 transform -translate-y-1/2 bg-gray-900/70 text-white border-none text-4xl rounded-full w-14 h-14 flex items-center justify-center cursor-pointer z-20 transition-colors shadow-lg nav-arrow hover:bg-pink-600/80" onClick={previousSlide}>&#10094;</button>
             <button className="absolute top-1/2 right-8 transform -translate-y-1/2 bg-gray-900/70 text-white border-none text-4xl rounded-full w-14 h-14 flex items-center justify-center cursor-pointer z-20 transition-colors shadow-lg nav-arrow hover:bg-pink-600/80" onClick={nextSlide}>&#10095;</button>
-            
-            {/* Subscription Form Modal */}
-            <SubscriptionForm 
-                isOpen={showSubscriptionForm} 
-                onClose={handleCloseSubscriptionForm} 
-            />
         </div>
     );
 }
