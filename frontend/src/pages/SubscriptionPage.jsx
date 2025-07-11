@@ -71,6 +71,7 @@ const SubscriptionPageContent = () => {
   const [selectedPlan, setSelectedPlan] = useState(SUBSCRIPTION_PLANS[0]);
   const [customAmount, setCustomAmount] = useState('');
   const [showCustomInput, setShowCustomInput] = useState(false);
+  const [processingAction, setProcessingAction] = useState(null); // 'update' | 'cancel' | null
 
   // Fetch current subscription
   useEffect(() => {
@@ -182,7 +183,7 @@ const SubscriptionPageContent = () => {
   };
 
   const handleUpdateSubscription = async (newPlanId, newPlanName) => {
-    setProcessing(true);
+    setProcessingAction('update');
     setError('');
     setMessage('');
 
@@ -202,12 +203,12 @@ const SubscriptionPageContent = () => {
     } catch (err) {
       setError(err.response?.data?.message || 'Erreur lors de la mise à jour de l\'abonnement');
     } finally {
-      setProcessing(false);
+      setProcessingAction(null);
     }
   };
 
   const handleCancelSubscription = async (immediate = false) => {
-    setProcessing(true);
+    setProcessingAction('cancel');
     setError('');
     setMessage('');
 
@@ -226,7 +227,7 @@ const SubscriptionPageContent = () => {
     } catch (err) {
       setError(err.response?.data?.message || 'Erreur lors de l\'annulation de l\'abonnement');
     } finally {
-      setProcessing(false);
+      setProcessingAction(null);
     }
   };
 
@@ -471,10 +472,10 @@ const SubscriptionPageContent = () => {
                   <button
                     type="button"
                     onClick={() => handleUpdateSubscription(selectedPlan.id, selectedPlan.name)}
-                    disabled={processing}
+                    disabled={processingAction === 'update'}
                     className="w-full bg-blue-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-lg shadow-md transition-colors"
                   >
-                    {processing ? (
+                    {processingAction === 'update' ? (
                       <>
                         <FaSpinner className="animate-spin mr-2" />
                         Mise à jour...
@@ -491,10 +492,10 @@ const SubscriptionPageContent = () => {
                   <button
                     type="button"
                     onClick={() => handleCancelSubscription(false)}
-                    disabled={processing}
+                    disabled={processingAction === 'cancel'}
                     className="w-full bg-red-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-lg shadow-md transition-colors"
                   >
-                    {processing ? (
+                    {processingAction === 'cancel' ? (
                       <>
                         <FaSpinner className="animate-spin mr-2" />
                         Annulation...

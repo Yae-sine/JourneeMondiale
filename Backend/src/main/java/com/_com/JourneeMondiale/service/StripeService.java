@@ -133,30 +133,4 @@ public class StripeService {
             // Log error but don't throw exception to avoid failing the payment confirmation
         }
     }
-
-    /**
-     * Handles webhook events from Stripe (placeholder for future implementation)
-     * 
-     * @param payload Raw webhook payload
-     * @param signature Stripe signature header
-     * @return Processing result message
-     */
-    public String handleWebhook(String payload, String signature) {
-        // TODO: Implement webhook signature verification and event handling
-        // This is a placeholder for future webhook implementation
-        
-        try {
-            // In production, you should:
-            // 1. Verify the webhook signature
-            // 2. Parse the event
-            // 3. Handle different event types (payment_intent.succeeded, payment_intent.payment_failed, etc.)
-            
-            System.out.println("Webhook received with signature: " + signature);
-            
-            return "Webhook received";
-        } catch (Exception e) {
-            System.err.println("Webhook processing error: " + e.getMessage());
-            throw new RuntimeException("Webhook processing failed");
-        }
-    }
 }

@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,8 +19,11 @@ import com._com.JourneeMondiale.repository.SubscriptionRepository;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
+import com.stripe.model.Event;
+import com.stripe.model.Invoice;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.Price;
+import com.stripe.net.Webhook;
 import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.CustomerSearchParams;
 import com.stripe.param.PaymentIntentCreateParams;
@@ -35,6 +40,11 @@ public class SubscriptionService {
 
     @Value("${STRIPE_PRODUCT_ID}")
     private String stripeProductId;
+
+    @Value("${STRIPE_WEBHOOK_SECRET}")
+    private String stripeWebhookSecret;
+
+    private static final Logger logger = LoggerFactory.getLogger(SubscriptionService.class);
 
     @Autowired
     private SubscriptionRepository subscriptionRepository;
@@ -386,5 +396,73 @@ public class SubscriptionService {
         subscriptionRepository.save(subscription);
 
         return new SubscriptionResponse(subscription);
+    }
+
+    /**
+     * Handle Stripe webhook events for subscription renewal
+     */
+    public void handleStripeSubscriptionWebhook(String payload, String sigHeader) throws Exception {
+        Event event = null;
+        try {
+            event = Webhook.constructEvent(
+                payload, sigHeader, stripeWebhookSecret
+            );
+        } catch (Exception e) {
+            logger.error("Webhook error while validating signature.", e);
+            throw e;
+        }
+
+        switch (event.getType()) {
+            case "invoice.payment_succeeded": {
+                // Get the invoice object from the event
+                Invoice invoice = (Invoice) event.getDataObjectDeserializer().getObject().orElse(null);
+                if (invoice == null) {
+                    break;
+                }
+                String stripeSubscriptionId = invoice.getSubscription();
+                if (stripeSubscriptionId == null) {
+                    break;
+                }
+                // Fetch the latest subscription object from Stripe
+                com.stripe.model.Subscription stripeSubscription = com.stripe.model.Subscription.retrieve(stripeSubscriptionId);
+                // Update local database
+                Optional<Subscription> subOpt = subscriptionRepository.findByStripeSubscriptionId(stripeSubscriptionId);
+                if (subOpt.isPresent()) {
+                    Subscription sub = subOpt.get();
+                    if (stripeSubscription.getCurrentPeriodStart() != null) {
+                        sub.setCurrentPeriodStart(LocalDateTime.ofEpochSecond(stripeSubscription.getCurrentPeriodStart(), 0, ZoneOffset.UTC));
+                    }
+                    if (stripeSubscription.getCurrentPeriodEnd() != null) {
+                        sub.setCurrentPeriodEnd(LocalDateTime.ofEpochSecond(stripeSubscription.getCurrentPeriodEnd(), 0, ZoneOffset.UTC));
+                    }
+                    sub.setStatus(stripeSubscription.getStatus());
+                    subscriptionRepository.save(sub);
+                }
+                break;
+            }
+            case "invoice.payment_failed": {
+                // Get the invoice object from the event
+                Invoice invoice = (Invoice) event.getDataObjectDeserializer().getObject().orElse(null);
+                if (invoice == null) {
+                    break;
+                }
+                String stripeSubscriptionId = invoice.getSubscription();
+                if (stripeSubscriptionId == null) {
+                    break;
+                }
+                // Fetch the latest subscription object from Stripe
+                com.stripe.model.Subscription stripeSubscription = com.stripe.model.Subscription.retrieve(stripeSubscriptionId);
+                // Update local database
+                Optional<Subscription> subOpt = subscriptionRepository.findByStripeSubscriptionId(stripeSubscriptionId);
+                if (subOpt.isPresent()) {
+                    Subscription sub = subOpt.get();
+                    sub.setStatus(stripeSubscription.getStatus()); // likely 'past_due' or 'unpaid'
+                    subscriptionRepository.save(sub);
+                }
+                break;
+            }
+            default:
+                logger.info("Unhandled event type: " + event.getType());
+        }
     }
 }
