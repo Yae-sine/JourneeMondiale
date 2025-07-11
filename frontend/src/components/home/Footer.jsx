@@ -8,7 +8,7 @@ function Footer() {
                 <img src="images/Landing A/Logo-gustave-roussy.png" alt="Gustave Roussy" className="h-14 md:h-20 w-auto" />
             </div>
             {/* Center: Don de Confiance logo and text */}
-            <div className="flex flex-col md:flex-row items-center justify-center flex-1 gap-4 md:gap-6 text-center md:text-left">
+            <div className="flex flex-col md:flex-row items-center justify-center flex-1 gap-4 md:gap-6 text-center md:text-left ml-14">
                 <img src="images/Landing A/logo don de confiance.png" alt="Don de Confiance" className="h-12 md:h-16 w-auto" />
                 <span className="text-xs md:text-sm text-gray-600 max-w-xl">
                     Gustave Roussy est labellisé « Don en Confiance » depuis 2009. Le Don en Confiance est un organisme de labellisation et de contrôle des associations et fondations faisant appel à la générosité du public.

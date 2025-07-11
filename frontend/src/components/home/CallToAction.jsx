@@ -1,26 +1,17 @@
-import React, { useState } from 'react';
-import DonationForm from '../payment/DonationForm';
-import SubscriptionForm from '../subscription/SubscriptionForm';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function CallToAction() {
-    const [showDonationForm, setShowDonationForm] = useState(false);
-    const [showSubscriptionForm, setShowSubscriptionForm] = useState(false);
+    const navigate = useNavigate();
 
     const handleDonationClick = () => {
-        setShowDonationForm(true);
-    };
-
-    const handleCloseDonationForm = () => {
-        setShowDonationForm(false);
+        navigate('/donation');
     };
 
     const handleSubscriptionClick = () => {
-        setShowSubscriptionForm(true);
+        navigate('/subscription');
     };
 
-    const handleCloseSubscriptionForm = () => {
-        setShowSubscriptionForm(false);
-    };
     return (
         <section className="w-full py-10 px-2 md:px-0 bg-[#00ACA8]">
             <div className="max-w-6xl mx-auto flex md:flex-row items-center md:items-stretch gap-8">
@@ -55,18 +46,6 @@ function CallToAction() {
                     </p>
                 </div>
             </div>
-
-            {/* Donation Form Modal */}
-            <DonationForm 
-                isOpen={showDonationForm} 
-                onClose={handleCloseDonationForm} 
-            />
-
-            {/* Subscription Form Modal */}
-            <SubscriptionForm 
-                isOpen={showSubscriptionForm} 
-                onClose={handleCloseSubscriptionForm} 
-            />
         </section>
     );
 }
