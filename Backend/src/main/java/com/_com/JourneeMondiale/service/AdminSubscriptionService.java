@@ -133,7 +133,6 @@ public class AdminSubscriptionService {
             statusDistribution.put("active", activeSubscriptions);
             statusDistribution.put("canceled", canceledSubscriptions);
             statusDistribution.put("incomplete", incompleteSubscriptions);
-            statusDistribution.put("unpaid", subscriptionRepository.countByStatus("unpaid"));
             statistics.put("statusDistribution", statusDistribution);
             
             // Recent subscriptions count (last 30 days)

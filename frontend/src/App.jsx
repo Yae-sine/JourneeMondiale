@@ -11,6 +11,7 @@ import UsersPage from './pages/admin/UsersPage';
 import EditUserForm from './pages/admin/EditUserForm';
 import AddUserForm from './pages/admin/AddUserForm';
 import AdminDonationsPage from './pages/admin/AdminDonationsPage';
+import AdminSubscriptionsPage from './pages/admin/AdminSubscriptionsPage';
 import AdminRoute from './components/admin/AdminRoute';
 
 function App() {
@@ -54,13 +55,13 @@ function App() {
             </AdminRoute>
           } />
 
-          {/* <Route path="/admin/subscriptions" element={
+          <Route path="/admin/subscriptions" element={
             <AdminRoute>
               <AdminSubscriptionsPage />
             </AdminRoute>
           } />
           
-          <Route path="/admin/posts" element={
+          {/* <Route path="/admin/posts" element={
             <AdminRoute>
               <AdminPostsPage />
             </AdminRoute>
