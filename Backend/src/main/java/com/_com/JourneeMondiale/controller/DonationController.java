@@ -139,7 +139,6 @@ public class DonationController {
             Map<String, Object> stats = donationService.getDonationStatistics();
             return ResponseEntity.ok(stats);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
