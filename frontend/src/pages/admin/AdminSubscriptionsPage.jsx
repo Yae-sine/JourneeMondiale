@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaRegCreditCard, FaSearch, FaEye, FaFilter, FaUsers, FaMoneyBillWave } from 'react-icons/fa';
+import { FaRegCreditCard, FaSearch, FaEye, FaUsers, FaMoneyBillWave } from 'react-icons/fa';
 import AdminSidebar from '../../components/admin/sidebar';
 import { subscriptionService } from '../../services/subscriptionService';
 
@@ -47,7 +47,7 @@ const AdminSubscriptionsPage = () => {
   useEffect(() => {
     loadSubscriptions(0, filterStatus === 'all' ? '' : filterStatus, searchTerm);
     loadStatistics();
-  }, []);
+  }, [filterStatus,searchTerm]);
 
   useEffect(() => {
     loadSubscriptions(0, filterStatus === 'all' ? '' : filterStatus, searchTerm);
@@ -127,7 +127,7 @@ const AdminSubscriptionsPage = () => {
             <div className="border-b border-gray-200">
               <nav className="-mb-px flex space-x-8 px-6">
                 {[
-                  { id: 'all', label: 'Tous les Abonnements', count: statistics.totalSubscriptions || 0},
+                  { id: 'all', label: 'Tous les Abonnements', count: statistics?.totalSubscriptions || 0},
                   { id: 'active', label: 'Actifs', count: statistics?.activeSubscriptions || 0 },
                   { id: 'canceled', label: 'Annulés', count: statistics?.canceledSubscriptions || 0 },
                   { id: 'incomplete', label: 'Incomplets', count: statistics?.incompleteSubscriptions || 0 }
