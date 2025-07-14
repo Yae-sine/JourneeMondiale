@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import Footer from '../components/home/Footer';
+import { authService } from '../services/authService';
 
 function RegisterPage() {
     const [formData, setFormData] = useState({
@@ -15,6 +15,7 @@ function RegisterPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -22,6 +23,13 @@ function RegisterPage() {
             ...formData,
             [e.target.name]: e.target.value
         });
+        // Clear field error when user starts typing
+        if (fieldErrors[e.target.name]) {
+            setFieldErrors({
+                ...fieldErrors,
+                [e.target.name]: ''
+            });
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -29,41 +37,29 @@ function RegisterPage() {
         setLoading(true);
         setError('');
         setSuccess('');
+        setFieldErrors({});
 
-        // Validate passwords match
-        if (formData.password !== formData.confirmPassword) {
-            setError('Les mots de passe ne correspondent pas.');
+        // Validate form data
+        const validation = authService.validateRegisterData(formData);
+        if (!validation.isValid) {
+            setFieldErrors(validation.errors);
             setLoading(false);
             return;
         }
 
-        // Prepare data for API (exclude confirmPassword)
-        const { confirmPassword, ...apiData } = formData;
-
         try {
-            const response = await axios.post('http://localhost:8080/api/auth/signup', apiData, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                withCredentials: true,
-            });
-
-            setSuccess('Compte créé avec succès ! Redirection vers la page de connexion...');
+            const response = await authService.register(formData);
+            console.log('Registration successful:', response);
+            
+            setSuccess('Inscription réussie ! Vous pouvez maintenant vous connecter.');
+            
+            // Redirect to login page after 2 seconds
             setTimeout(() => {
                 navigate('/login');
             }, 2000);
         } catch (err) {
             console.error('Registration error:', err);
-            if (err.response) {
-                // Server responded with error status
-                setError(err.response.data.message || 'Erreur lors de la création du compte.');
-            } else if (err.request) {
-                // Request was made but no response received
-                setError('Erreur réseau. Veuillez vérifier votre connexion.');
-            } else {
-                // Something else happened
-                setError('Une erreur inattendue s\'est produite.');
-            }
+            setError(err.message || 'Une erreur inattendue s\'est produite.');
         } finally {
             setLoading(false);
         }
@@ -121,9 +117,16 @@ function RegisterPage() {
                                     required
                                     value={formData.username}
                                     onChange={handleChange}
-                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#00ACA8] focus:border-[#00ACA8] sm:text-sm"
+                                    className={`appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none sm:text-sm ${
+                                        fieldErrors.username 
+                                            ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                                            : 'border-gray-300 focus:ring-[#00ACA8] focus:border-[#00ACA8]'
+                                    }`}
                                     placeholder="Choisissez un nom d'utilisateur"
                                 />
+                                {fieldErrors.username && (
+                                    <p className="mt-1 text-sm text-red-600">{fieldErrors.username}</p>
+                                )}
                             </div>
                         </div>
 
@@ -140,9 +143,16 @@ function RegisterPage() {
                                         required
                                         value={formData.firstName}
                                         onChange={handleChange}
-                                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#00ACA8] focus:border-[#00ACA8] sm:text-sm"
+                                        className={`appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none sm:text-sm ${
+                                            fieldErrors.firstName 
+                                                ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                                                : 'border-gray-300 focus:ring-[#00ACA8] focus:border-[#00ACA8]'
+                                        }`}
                                         placeholder="Votre prénom"
                                     />
+                                    {fieldErrors.firstName && (
+                                        <p className="mt-1 text-sm text-red-600">{fieldErrors.firstName}</p>
+                                    )}
                                 </div>
                             </div>
 
@@ -158,9 +168,16 @@ function RegisterPage() {
                                         required
                                         value={formData.lastName}
                                         onChange={handleChange}
-                                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#00ACA8] focus:border-[#00ACA8] sm:text-sm"
+                                        className={`appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none sm:text-sm ${
+                                            fieldErrors.lastName 
+                                                ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                                                : 'border-gray-300 focus:ring-[#00ACA8] focus:border-[#00ACA8]'
+                                        }`}
                                         placeholder="Votre nom"
                                     />
+                                    {fieldErrors.lastName && (
+                                        <p className="mt-1 text-sm text-red-600">{fieldErrors.lastName}</p>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -177,9 +194,16 @@ function RegisterPage() {
                                     required
                                     value={formData.email}
                                     onChange={handleChange}
-                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#00ACA8] focus:border-[#00ACA8] sm:text-sm"
+                                    className={`appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none sm:text-sm ${
+                                        fieldErrors.email 
+                                            ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                                            : 'border-gray-300 focus:ring-[#00ACA8] focus:border-[#00ACA8]'
+                                    }`}
                                     placeholder="votre@email.com"
                                 />
+                                {fieldErrors.email && (
+                                    <p className="mt-1 text-sm text-red-600">{fieldErrors.email}</p>
+                                )}
                             </div>
                         </div>
 
@@ -195,9 +219,16 @@ function RegisterPage() {
                                     required
                                     value={formData.password}
                                     onChange={handleChange}
-                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#00ACA8] focus:border-[#00ACA8] sm:text-sm"
+                                    className={`appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none sm:text-sm ${
+                                        fieldErrors.password 
+                                            ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                                            : 'border-gray-300 focus:ring-[#00ACA8] focus:border-[#00ACA8]'
+                                    }`}
                                     placeholder="Choisissez un mot de passe"
                                 />
+                                {fieldErrors.password && (
+                                    <p className="mt-1 text-sm text-red-600">{fieldErrors.password}</p>
+                                )}
                             </div>
                             <p className="mt-1 text-xs text-gray-500">
                                 Minimum 8 caractères avec lettres et chiffres
@@ -216,9 +247,16 @@ function RegisterPage() {
                                     required
                                     value={formData.confirmPassword}
                                     onChange={handleChange}
-                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#00ACA8] focus:border-[#00ACA8] sm:text-sm"
+                                    className={`appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none sm:text-sm ${
+                                        fieldErrors.confirmPassword 
+                                            ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                                            : 'border-gray-300 focus:ring-[#00ACA8] focus:border-[#00ACA8]'
+                                    }`}
                                     placeholder="Répétez votre mot de passe"
                                 />
+                                {fieldErrors.confirmPassword && (
+                                    <p className="mt-1 text-sm text-red-600">{fieldErrors.confirmPassword}</p>
+                                )}
                             </div>
                         </div>
 

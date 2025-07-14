@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { authService } from '../../services/authService';
 import { 
   FaUsers, 
   FaHandHoldingHeart, 
@@ -115,9 +116,7 @@ const AdminSidebar = () => {
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
           <button
             onClick={() => {
-              // Add logout logic here
-              localStorage.removeItem('token');
-              window.location.href = '/login';
+              authService.logout();
             }}
             className="w-full flex items-center justify-center p-3 rounded-lg text-gray-700 hover:text-white hover:shadow-md transition-all duration-200"
             style={{ 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import Footer from '../components/home/Footer';
+import { authService } from '../services/authService';
 
 function LoginPage() {
     const [formData, setFormData] = useState({
@@ -10,6 +10,7 @@ function LoginPage() {
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -17,40 +18,42 @@ function LoginPage() {
             ...formData,
             [e.target.name]: e.target.value
         });
+        // Clear field error when user starts typing
+        if (fieldErrors[e.target.name]) {
+            setFieldErrors({
+                ...fieldErrors,
+                [e.target.name]: ''
+            });
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
+        setFieldErrors({});
+
+        // Validate form data
+        const validation = authService.validateLoginData(formData);
+        if (!validation.isValid) {
+            setFieldErrors(validation.errors);
+            setLoading(false);
+            return;
+        }
 
         try {
-            const response = await axios.post('http://localhost:8080/api/auth/signin', formData, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                withCredentials: true, // Important for cookies
-            });
-
-            console.log('Login successful:', response.data);
+            const response = await authService.login(formData);
+            console.log('Login successful:', response);
             
-            // Store user info in localStorage (optional)
-            // localStorage.setItem('user', JSON.stringify(response.data));
-            
-            // Redirect to home page
-            navigate('/');
+            // Check user role and redirect accordingly
+            if (response.role === 'ROLE_ADMIN') {
+                navigate('/admin/dashboard');
+            } else {
+                navigate('/');
+            }
         } catch (err) {
             console.error('Login error:', err);
-            if (err.response) {
-                // Server responded with error status
-                setError(err.response.data.message || 'Login failed. Please try again.');
-            } else if (err.request) {
-                // Request was made but no response received
-                setError('Network error. Please check your connection.');
-            } else {
-                // Something else happened
-                setError('An unexpected error occurred.');
-            }
+            setError(err.message || 'Erreur de connexion. Veuillez réessayer.');
         } finally {
             setLoading(false);
         }
@@ -102,9 +105,14 @@ function LoginPage() {
                                     required
                                     value={formData.username}
                                     onChange={handleChange}
-                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#00ACA8] focus:border-[#00ACA8] sm:text-sm"
+                                    className={`appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#00ACA8] focus:border-[#00ACA8] sm:text-sm ${
+                                        fieldErrors.username ? 'border-red-300' : 'border-gray-300'
+                                    }`}
                                     placeholder="Entrez votre nom d'utilisateur"
                                 />
+                                {fieldErrors.username && (
+                                    <p className="mt-1 text-sm text-red-600">{fieldErrors.username}</p>
+                                )}
                             </div>
                         </div>
 
@@ -120,9 +128,14 @@ function LoginPage() {
                                     required
                                     value={formData.password}
                                     onChange={handleChange}
-                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#00ACA8] focus:border-[#00ACA8] sm:text-sm"
+                                    className={`appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#00ACA8] focus:border-[#00ACA8] sm:text-sm ${
+                                        fieldErrors.password ? 'border-red-300' : 'border-gray-300'
+                                    }`}
                                     placeholder="Entrez votre mot de passe"
                                 />
+                                {fieldErrors.password && (
+                                    <p className="mt-1 text-sm text-red-600">{fieldErrors.password}</p>
+                                )}
                             </div>
                         </div>
 
