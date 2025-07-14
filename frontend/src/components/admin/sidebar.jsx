@@ -6,7 +6,8 @@ import {
   FaShareAlt, 
   FaTachometerAlt,
   FaBars,
-  FaTimes
+  FaTimes,
+  FaRegCreditCard
 } from 'react-icons/fa';
 
 const AdminSidebar = () => {
@@ -31,6 +32,12 @@ const AdminSidebar = () => {
       title: 'Donations',
       icon: <FaHandHoldingHeart size={20} />,
       path: '/admin/donations'
+    },
+    {
+      id: 'subscriptions',
+      title: 'Subscriptions',
+      icon: <FaRegCreditCard size={20} />,
+      path: '/admin/subscriptions'
     },
     {
       id: 'posts',

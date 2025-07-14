@@ -3,13 +3,14 @@ import { UserProvider } from './context/UserContext';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import DonationPage from './pages/DonationPage';
-import SubscriptionPage from './pages/SubscriptionPage';
+import DonationPage from './pages/user/DonationPage';
+import SubscriptionPage from './pages/user/SubscriptionPage';
 import Unauthorized from './pages/Unauthorized';
 import AdminPage from './pages/admin/Dashboard';
 import UsersPage from './pages/admin/UsersPage';
 import EditUserForm from './pages/admin/EditUserForm';
 import AddUserForm from './pages/admin/AddUserForm';
+import AdminDonationsPage from './pages/admin/AdminDonationsPage';
 import AdminRoute from './components/admin/AdminRoute';
 
 function App() {
@@ -47,15 +48,21 @@ function App() {
             </AdminRoute>
           } />
           
-          {/*<Route path="/admin/donations" element={
+          <Route path="/admin/donations" element={
             <AdminRoute>
-              <AdminDonations />
+              <AdminDonationsPage />
+            </AdminRoute>
+          } />
+
+          {/* <Route path="/admin/subscriptions" element={
+            <AdminRoute>
+              <AdminSubscriptionsPage />
             </AdminRoute>
           } />
           
           <Route path="/admin/posts" element={
             <AdminRoute>
-              <AdminPosts />
+              <AdminPostsPage />
             </AdminRoute>
           } /> */}
         </Routes>
