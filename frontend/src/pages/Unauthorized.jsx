@@ -72,14 +72,14 @@ function Unauthorized() {
 
                     {/* Contact Support */}
                     <div className="pt-4 border-t border-gray-200">
-                        <p className="text-sm text-gray-500">
+                        <div className="text-sm text-gray-500">
                             Besoin d'aide ? {' '}
                             <div 
                                 className="text-[#00ACA8] hover:text-[#00ACA8]/80 font-medium"
                             >
                                 Contactez le support via le mail : aboulhajyassine@gmail.com
                             </div>
-                        </p>
+                        </div>
                     </div>
                 </div>
             </div>

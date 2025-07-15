@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../components/home/Footer';
 import { authService } from '../services/authService';
+import { useUser } from '../context/UserContext';
 
 function LoginPage() {
     const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ function LoginPage() {
     const [error, setError] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
     const navigate = useNavigate();
+    const { updateUser } = useUser();
 
     const handleChange = (e) => {
         setFormData({
@@ -45,11 +47,14 @@ function LoginPage() {
             const response = await authService.login(formData);
             console.log('Login successful:', response);
             
+            // Update the user context with the logged-in user data
+            updateUser(response);
+            
             // Check user role and redirect accordingly
             if (response.role === 'ROLE_ADMIN') {
                 navigate('/admin/dashboard');
-            } else {
-                navigate('/');
+            } else if (response.role === 'ROLE_USER') {
+                navigate('/account/profile');
             }
         } catch (err) {
             console.error('Login error:', err);
@@ -138,27 +143,6 @@ function LoginPage() {
                                 )}
                             </div>
                         </div>
-
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center">
-                                <input
-                                    id="remember-me"
-                                    name="remember-me"
-                                    type="checkbox"
-                                    className="h-4 w-4 text-[#00ACA8] focus:ring-[#00ACA8] border-gray-300 rounded"
-                                />
-                                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                                    Se souvenir de moi
-                                </label>
-                            </div>
-
-                            <div className="text-sm">
-                                <a href="#" className="font-medium text-[#00ACA8] hover:text-[#00ACA8]/80 transition-colors">
-                                    Mot de passe oublié ?
-                                </a>
-                            </div>
-                        </div>
-
                         <div>
                             <button
                                 type="submit"

@@ -9,7 +9,6 @@ import {
 import { FaCrown, FaSpinner, FaArrowLeft, FaExclamationTriangle, FaUser, FaEnvelope, FaHeart } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
-import withAuth from '../../components/auth/withAuth';
 import Footer from '../../components/home/Footer';
 import axios from 'axios';
 
@@ -555,4 +554,4 @@ const SubscriptionPage = () => {
   );
 };
 
-export default withAuth(SubscriptionPage);
+export default SubscriptionPage;

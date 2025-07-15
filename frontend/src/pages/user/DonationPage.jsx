@@ -9,7 +9,6 @@ import {
 import { FaHeart, FaSpinner, FaArrowLeft, FaUser, FaEnvelope } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
-import withAuth from '../../components/auth/withAuth';
 import Footer from '../../components/home/Footer';
 import axios from 'axios';
 
@@ -330,4 +329,4 @@ const DonationPage = () => {
   );
 };
 
-export default withAuth(DonationPage);
+export default DonationPage;

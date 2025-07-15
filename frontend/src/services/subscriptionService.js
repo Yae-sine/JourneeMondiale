@@ -157,10 +157,7 @@ class SubscriptionService {
     // Format billing interval for display
     formatInterval(interval) {
         const intervalMap = {
-            'day': 'Quotidien',
-            'week': 'Hebdomadaire',
             'month': 'Mensuel',
-            'year': 'Annuel'
         };
         
         return intervalMap[interval] || interval;

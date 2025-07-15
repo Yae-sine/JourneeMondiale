@@ -13,17 +13,32 @@ import AddUserForm from './pages/admin/AddUserForm';
 import AdminDonationsPage from './pages/admin/AdminDonationsPage';
 import AdminSubscriptionsPage from './pages/admin/AdminSubscriptionsPage';
 import AdminRoute from './components/admin/AdminRoute';
-
+import Profile from './pages/user/Profile';
+import withAuth from './components/auth/withAuth';
 function App() {
+  const AuthProfile = withAuth(Profile);
+  const AuthDonationPage = withAuth(DonationPage);
+  const AuthSubscriptionPage = withAuth(SubscriptionPage);
+  // const AuthPostsPage = withAuth(() => <div>Mes Publications</div>);
+
   return (
+
+
     <UserProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/donation" element={<DonationPage />} />
-          <Route path="/subscription" element={<SubscriptionPage />} />
+          <Route path="/donation" element={<AuthDonationPage />} />
+          <Route path="/subscription" element={<AuthSubscriptionPage />} />
+          <Route path="/account" element={<Navigate to="/account/profile" replace />} />
+          <Route path="/account/profile" element={<AuthProfile />} />
+          {/* <Route path="/account/donations" element={<AuthDonationPage />} />
+          <Route path="/account/subscription" element={<AuthSubscriptionPage />} /> */}
+          {/* <Route path="/account/posts" element={<AuthPostsPage />} /> */}
+
+
           <Route path="/unauthorized" element={<Unauthorized />} />
           <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="/admin/dashboard" element={
@@ -60,12 +75,13 @@ function App() {
               <AdminSubscriptionsPage />
             </AdminRoute>
           } />
-          
           {/* <Route path="/admin/posts" element={
             <AdminRoute>
               <AdminPostsPage />
             </AdminRoute>
           } /> */}
+          
+          
         </Routes>
       </BrowserRouter>
     </UserProvider>

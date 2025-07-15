@@ -93,5 +93,41 @@ export const userService = {
       console.error('Error deleting user:', error);
       throw error;
     }
+  },
+
+  // Get current user profile
+  getCurrentUserProfile: async () => {
+    try {
+      const response = await apiClient.get('/me');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching current user profile:', error);
+      throw error;
+    }
+  },
+
+  // Update current user profile
+  updateCurrentUserProfile: async (userData) => {
+    try {
+      const response = await apiClient.put('/me', userData);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating current user profile:', error);
+      throw error;
+    }
+  },
+
+  // Change password for current user
+  changePassword: async (oldPassword, newPassword) => {
+    try {
+      const response = await apiClient.put('/me/password', {
+        oldPassword,
+        newPassword
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error changing password:', error);
+      throw error;
+    }
   }
 };

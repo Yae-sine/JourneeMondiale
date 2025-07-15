@@ -70,5 +70,41 @@ public class UserService {
                 })
                 .collect(Collectors.toList());
     }
+
+    // New methods for current user profile management
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+    }
+
+    public User updateUserProfile(String username, User userDetails) {
+        User user = getUserByUsername(username);
+        
+        // Update only allowed fields (not role or password)
+        if (userDetails.getFirstName() != null) {
+            user.setFirstName(userDetails.getFirstName());
+        }
+        if (userDetails.getLastName() != null) {
+            user.setLastName(userDetails.getLastName());
+        }
+        if (userDetails.getEmail() != null) {
+            user.setEmail(userDetails.getEmail());
+        }
+        
+        return userRepository.save(user);
+    }
+
+    public void changePassword(String username, String oldPassword, String newPassword) {
+        User user = getUserByUsername(username);
+        
+        // Verify old password
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new RuntimeException("Old password is incorrect");
+        }
+        
+        // Hash and set new password
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
 }
 

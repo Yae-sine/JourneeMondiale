@@ -18,7 +18,7 @@ const withAuth = (WrappedComponent) => {
       return (
         <div className="min-h-screen bg-white flex items-center justify-center">
           <div className="text-center">
-            <FaSpinner className="animate-spin mx-auto mb-4 text-3xl text-[#00ACA8]" />
+            <FaSpinner className="animate-spin mx-auto mb-4 text-3xl" style={{ color: '#00ACA8' }} />
             <p className="text-gray-600">Vérification de l'authentification...</p>
           </div>
         </div>
