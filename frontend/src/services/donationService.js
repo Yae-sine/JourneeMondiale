@@ -171,36 +171,25 @@ export const donationService = {
     }
   },
 
-  // Create donation (usually called by payment service)
-  createDonation: async (donationData) => {
+  // Get current user's donations
+  getUserDonations: async () => {
     try {
-      const response = await apiClient.post('/', donationData);
-      return response.data;
+      const response = await apiClient.get('/my-donations');
+      return response.data || [];
     } catch (error) {
-      console.error('Error creating donation:', error);
-      throw error;
+      console.error('Error fetching user donations:', error);
+      throw new Error(error.response?.data?.message || 'Erreur lors de la récupération des donations');
     }
   },
 
-  // Update donation
-  updateDonation: async (id, donationData) => {
+  // Get current user's donation statistics
+  getUserDonationStatistics: async () => {
     try {
-      const response = await apiClient.put(`/${id}`, donationData);
-      return response.data;
+      const response = await apiClient.get('/my-donations/statistics');
+      return response.data || {};
     } catch (error) {
-      console.error('Error updating donation:', error);
-      throw error;
+      console.error('Error fetching user donation statistics:', error);
+      throw new Error(error.response?.data?.message || 'Erreur lors de la récupération des statistiques');
     }
   },
-
-  // Delete donation
-  deleteDonation: async (id) => {
-    try {
-      const response = await apiClient.delete(`/${id}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error deleting donation:', error);
-      throw error;
-    }
-  }
 };

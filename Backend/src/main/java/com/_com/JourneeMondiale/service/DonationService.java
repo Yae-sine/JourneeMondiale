@@ -48,11 +48,6 @@ public class DonationService {
         return donationRepository.findByPaymentIntentId(paymentIntentId);
     }
 
-    // Create a new donation
-    public Donation createDonation(Donation donation) {
-        return donationRepository.save(donation);
-    }
-
     // Update donation
     public Donation updateDonation(Long id, Donation donationDetails) {
         Optional<Donation> optionalDonation = donationRepository.findById(id);
@@ -67,15 +62,6 @@ public class DonationService {
             return donationRepository.save(donation);
         }
         return null;
-    }
-
-    // Delete donation
-    public boolean deleteDonation(Long id) {
-        if (donationRepository.existsById(id)) {
-            donationRepository.deleteById(id);
-            return true;
-        }
-        return false;
     }
 
     // Get donations by status
@@ -175,5 +161,44 @@ public class DonationService {
     // Get donations by amount range
     public List<Donation> getDonationsByAmountRange(BigDecimal minAmount, BigDecimal maxAmount) {
         return donationRepository.findByAmountBetween(minAmount, maxAmount);
+    }
+
+    // Get user donation statistics
+    public Map<String, Object> getUserDonationStatistics(String donorEmail) {
+        Map<String, Object> stats = new HashMap<>();
+        
+        List<Donation> userDonations = donationRepository.findByDonorEmailOrderByCreatedAtDesc(donorEmail);
+        
+        // Calculate statistics
+        long totalCount = userDonations.size();
+        BigDecimal totalAmount = userDonations.stream()
+            .filter(d -> "succeeded".equals(d.getStatus()))
+            .map(Donation::getAmount)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        
+        long succeededCount = userDonations.stream()
+            .filter(d -> "succeeded".equals(d.getStatus()))
+            .count();
+        
+        long pendingCount = userDonations.stream()
+            .filter(d -> "pending".equals(d.getStatus()))
+            .count();
+        
+        long failedCount = userDonations.stream()
+            .filter(d -> "failed".equals(d.getStatus()))
+            .count();
+        
+        stats.put("totalCount", totalCount);
+        stats.put("totalAmount", totalAmount);
+        stats.put("succeededCount", succeededCount);
+        stats.put("pendingCount", pendingCount);
+        stats.put("failedCount", failedCount);
+        
+        // Get most recent donation
+        if (!userDonations.isEmpty()) {
+            stats.put("lastDonation", userDonations.get(0));
+        }
+        
+        return stats;
     }
 }

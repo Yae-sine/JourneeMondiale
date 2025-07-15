@@ -151,7 +151,7 @@ const DonationPageContent = () => {
       <div className="bg-gradient-to-r from-[#00ACA8] to-[#007c7a] text-white py-10 shadow-md">
         <div className="max-w-4xl mx-auto px-6 flex flex-col gap-2">
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate(-1)}
             className="flex items-center text-white hover:text-gray-200 mb-4 transition-colors"
           >
             <FaArrowLeft className="mr-2" />

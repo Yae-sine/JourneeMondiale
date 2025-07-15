@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DonationPage from './pages/user/DonationPage';
+import UserDonations from './pages/user/UserDonations';
 import SubscriptionPage from './pages/user/SubscriptionPage';
 import Unauthorized from './pages/Unauthorized';
 import AdminPage from './pages/admin/Dashboard';
@@ -18,8 +19,8 @@ import withAuth from './components/auth/withAuth';
 function App() {
   const AuthProfile = withAuth(Profile);
   const AuthDonationPage = withAuth(DonationPage);
+  const AuthUserDonations = withAuth(UserDonations);
   const AuthSubscriptionPage = withAuth(SubscriptionPage);
-  // const AuthPostsPage = withAuth(() => <div>Mes Publications</div>);
 
   return (
 
@@ -34,9 +35,9 @@ function App() {
           <Route path="/subscription" element={<AuthSubscriptionPage />} />
           <Route path="/account" element={<Navigate to="/account/profile" replace />} />
           <Route path="/account/profile" element={<AuthProfile />} />
-          {/* <Route path="/account/donations" element={<AuthDonationPage />} />
-          <Route path="/account/subscription" element={<AuthSubscriptionPage />} /> */}
-          {/* <Route path="/account/posts" element={<AuthPostsPage />} /> */}
+          <Route path="/account/donations" element={<AuthUserDonations />} />
+          
+
 
 
           <Route path="/unauthorized" element={<Unauthorized />} />
