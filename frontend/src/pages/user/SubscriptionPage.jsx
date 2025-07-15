@@ -247,11 +247,11 @@ const SubscriptionPageContent = () => {
       <div className="bg-[#00ACA8] text-white py-8">
         <div className="max-w-5xl mx-auto px-6">
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate(-1)}
             className="flex items-center text-white hover:text-gray-200 mb-4 transition-colors"
           >
             <FaArrowLeft className="mr-2" />
-            Retour à l'accueil
+            Retour à la page précédente
           </button>
           <div className="flex items-center">
             <FaCrown className="mr-3 text-2xl" />

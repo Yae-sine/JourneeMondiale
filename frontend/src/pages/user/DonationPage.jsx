@@ -155,7 +155,7 @@ const DonationPageContent = () => {
             className="flex items-center text-white hover:text-gray-200 mb-4 transition-colors"
           >
             <FaArrowLeft className="mr-2" />
-            Retour à l'accueil
+            Retour à la page précédente
           </button>
           <h1 className="text-4xl font-extrabold tracking-tight mb-1">Faire un don ponctuel</h1>
           <p className="text-lg opacity-90 font-medium">

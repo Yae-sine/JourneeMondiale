@@ -33,6 +33,23 @@ class SubscriptionService {
         }
     }
 
+    // Get current user's subscription
+    async getCurrentSubscription() {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/subscriptions/current`, {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching current subscription:', error);
+            throw this.handleError(error);
+        }
+    }
+
     // Get subscription statistics for admin dashboard
     async getSubscriptionStatistics() {
         try {
