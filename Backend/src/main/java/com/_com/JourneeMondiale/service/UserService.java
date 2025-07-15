@@ -90,7 +90,9 @@ public class UserService {
         if (userDetails.getEmail() != null) {
             user.setEmail(userDetails.getEmail());
         }
-        
+        if (userDetails.getUsername() != null) {
+            user.setUsername(userDetails.getUsername());
+        }
         return userRepository.save(user);
     }
 

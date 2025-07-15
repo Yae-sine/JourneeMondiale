@@ -36,7 +36,8 @@ const Profile = () => {
         setEditForm({
           firstName: userData.firstName || '',
           lastName: userData.lastName || '',
-          email: userData.email || ''
+          email: userData.email || '',
+          username: userData.username || ''
         });
       } catch (err) {
         setError(err.message || 'Erreur lors de la récupération du profil.');
@@ -248,69 +249,80 @@ const Profile = () => {
                     </div>
                   )}
 
-                  {/* Edit Profile Tab */}
-                  {activeTab === 'edit' && (
+                {/* Edit Profile Tab */}
+                {activeTab === 'edit' && (
                     <form onSubmit={handleEditSubmit} className="space-y-10">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        <div>
-                          <label className="block text-base font-semibold text-gray-700 mb-3">
-                            Prénom
-                          </label>
-                          <input
-                            type="text"
-                            value={editForm.firstName}
-                            onChange={(e) => setEditForm(prev => ({ ...prev, firstName: e.target.value }))}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-lg"
-                            style={{ '--tw-ring-color': '#00ACA8' }}
-                          />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                            <div>
+                                <label className="block text-base font-semibold text-gray-700 mb-3">
+                                    Prénom
+                                </label>
+                                <input
+                                    type="text"
+                                    value={editForm.firstName}
+                                    onChange={(e) => setEditForm(prev => ({ ...prev, firstName: e.target.value }))}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-lg"
+                                    style={{ '--tw-ring-color': '#00ACA8' }}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-base font-semibold text-gray-700 mb-3">
+                                    Nom de famille
+                                </label>
+                                <input
+                                    type="text"
+                                    value={editForm.lastName}
+                                    onChange={(e) => setEditForm(prev => ({ ...prev, lastName: e.target.value }))}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-lg"
+                                    style={{ '--tw-ring-color': '#00ACA8' }}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-base font-semibold text-gray-700 mb-3">
+                                    Nom d'utilisateur
+                                </label>
+                                <input
+                                    type="text"
+                                    value={editForm.username}
+                                    onChange={(e) => setEditForm(prev => ({ ...prev, username: e.target.value }))}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-lg"
+                                    style={{ '--tw-ring-color': '#00ACA8' }}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-base font-semibold text-gray-700 mb-3">
+                                    Email
+                                </label>
+                                <input
+                                    type="email"
+                                    value={editForm.email}
+                                    onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-lg"
+                                    style={{ '--tw-ring-color': '#00ACA8' }}
+                                    required
+                                />
+                            </div>
                         </div>
-                        <div>
-                          <label className="block text-base font-semibold text-gray-700 mb-3">
-                            Nom de famille
-                          </label>
-                          <input
-                            type="text"
-                            value={editForm.lastName}
-                            onChange={(e) => setEditForm(prev => ({ ...prev, lastName: e.target.value }))}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-lg"
-                            style={{ '--tw-ring-color': '#00ACA8' }}
-                          />
+                        <div className="flex justify-end space-x-4 mt-4">
+                            <button
+                                type="button"
+                                onClick={() => setActiveTab('view')}
+                                className="px-6 py-3 text-lg text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
+                            >
+                                Annuler
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={updateLoading}
+                                className="px-8 py-3 text-lg text-white rounded-lg transition-colors disabled:opacity-50"
+                                style={{ backgroundColor: '#00ACA8' }}
+                            >
+                                {updateLoading ? 'Mise à jour...' : 'Enregistrer'}
+                            </button>
                         </div>
-                        <div className="md:col-span-2">
-                          <label className="block text-base font-semibold text-gray-700 mb-3">
-                            Email
-                          </label>
-                          <input
-                            type="email"
-                            value={editForm.email}
-                            onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-lg"
-                            style={{ '--tw-ring-color': '#00ACA8' }}
-                            required
-                          />
-                        </div>
-                      </div>
-                      <div className="flex justify-end space-x-4 mt-4">
-                        <button
-                          type="button"
-                          onClick={() => setActiveTab('view')}
-                          className="px-6 py-3 text-lg text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
-                        >
-                          Annuler
-                        </button>
-                        <button
-                          type="submit"
-                          disabled={updateLoading}
-                          className="px-8 py-3 text-lg text-white rounded-lg transition-colors disabled:opacity-50"
-                          style={{ backgroundColor: '#00ACA8' }}
-                        >
-                          {updateLoading ? 'Mise à jour...' : 'Enregistrer'}
-                        </button>
-                      </div>
                     </form>
-                  )}
-
-                  {/* Change Password Tab */}
+                )}
+                {/* Change Password Tab */}
                   {activeTab === 'password' && (
                     <form onSubmit={handlePasswordSubmit} className="space-y-10">
                       <div className="max-w-lg space-y-6">
