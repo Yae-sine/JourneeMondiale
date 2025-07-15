@@ -118,11 +118,11 @@ const UserSubscription = () => {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <UserSidebar />
-      <div className="flex-1 p-12">
+      <div className="flex-1 p-8">
         <div className="max-w-5xl mx-auto">
           {/* Header */}
           <div className="bg-white rounded-lg shadow-md p-12 mb-8">
-            <h1 className="text-4xl font-bold mb-4" style={{ color: '#00ACA8' }}>
+            <h1 className="text-3xl font-bold mb-2" style={{ color: '#00ACA8' }}>
               <FaRegCreditCard className="inline mr-3" />
               Mon Abonnement
             </h1>
