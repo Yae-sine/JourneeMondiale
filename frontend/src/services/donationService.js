@@ -120,9 +120,13 @@ export const donationService = {
   },
 
   // Get donation statistics
-  getDonationStatistics: async () => {
+  getDonationStatistics: async (startDate = null, endDate = null) => {
     try {
-      const response = await apiClient.get('/statistics');
+      const params = {};
+      if (startDate) params.startDate = startDate;
+      if (endDate) params.endDate = endDate;
+      
+      const response = await apiClient.get('/statistics', { params });
       return response.data || {};
     } catch (error) {
       console.error('Error fetching donation statistics:', error);

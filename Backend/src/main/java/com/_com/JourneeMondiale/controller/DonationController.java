@@ -144,9 +144,11 @@ public class DonationController {
     // Get donation statistics (Admin only)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/statistics")
-    public ResponseEntity<Map<String, Object>> getDonationStatistics() {
+    public ResponseEntity<Map<String, Object>> getDonationStatistics(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
         try {
-            Map<String, Object> stats = donationService.getDonationStatistics();
+            Map<String, Object> stats = donationService.getDonationStatistics(startDate, endDate);
             return ResponseEntity.ok(stats);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

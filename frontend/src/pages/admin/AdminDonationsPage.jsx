@@ -1,23 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { FaHandHoldingHeart, FaFilter, FaSort, FaEye, FaDownload, FaChartLine, FaSearch } from 'react-icons/fa';
+import { FaHandHoldingHeart, FaFilter, FaSort, FaEye, FaChartLine, FaSearch } from 'react-icons/fa';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
 import AdminSidebar from '../../components/admin/sidebar';
 import { donationService } from '../../services/donationService';
 
 const AdminDonationsPage = () => {
   const [donations, setDonations] = useState([]);
-  const [recentDonations, setRecentDonations] = useState([]);
   const [donationStats, setDonationStats] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('all'); // 'all', 'recent', 'stats'
+  const [activeTab, setActiveTab] = useState('all'); // 'all'  'stats'
+  
+  // Chart data states
+  const [donationsOverTime, setDonationsOverTime] = useState([]);
   
   // Pagination and filtering states
   const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const [sortBy, setSortBy] = useState('createdAt');
   const [sortDir, setSortDir] = useState('desc');
+  const pageSize = 10; 
   
   // Filter states
   const [filters, setFilters] = useState({
@@ -25,7 +28,9 @@ const AdminDonationsPage = () => {
     donorName: '',
     donorEmail: '',
     minAmount: '',
-    maxAmount: ''
+    maxAmount: '',
+    startDate: '',
+    endDate: ''
   });
   const [showFilters, setShowFilters] = useState(false);
 
@@ -40,8 +45,6 @@ const AdminDonationsPage = () => {
 
       if (activeTab === 'all') {
         await fetchAllDonations();
-      } else if (activeTab === 'recent') {
-        await fetchRecentDonations();
       } else if (activeTab === 'stats') {
         await fetchDonationStats();
       }
@@ -60,14 +63,71 @@ const AdminDonationsPage = () => {
     setTotalElements(response.totalElements || 0);
   };
 
-  const fetchRecentDonations = async () => {
-    const response = await donationService.getRecentDonations(20);
-    setRecentDonations(response || []);
-  };
 
   const fetchDonationStats = async () => {
-    const response = await donationService.getDonationStatistics();
+    const response = await donationService.getDonationStatistics(
+      filters.startDate || null,
+      filters.endDate || null
+    );
     setDonationStats(response || {});
+    
+    // Fetch chart data
+    await fetchChartData();
+  };
+
+  const fetchChartData = async () => {
+    try {
+      // Fetch all donations for chart processing
+      const allDonationsResponse = await donationService.getAllDonationsSimple();
+      const allDonations = allDonationsResponse || [];
+      
+      // Filter donations by date range if specified
+      let filteredDonations = allDonations;
+      if (filters.startDate || filters.endDate) {
+        filteredDonations = allDonations.filter(donation => {
+          const donationDate = new Date(donation.createdAt);
+          const startDate = filters.startDate ? new Date(filters.startDate) : null;
+          const endDate = filters.endDate ? new Date(filters.endDate) : null;
+          
+          if (startDate && donationDate < startDate) return false;
+          if (endDate && donationDate > endDate) return false;
+          return true;
+        });
+      }
+      
+      // Process donations over time
+      const donationsOverTimeData = processDonationsOverTime(filteredDonations);
+      setDonationsOverTime(donationsOverTimeData);
+    } catch (error) {
+      console.error('Error fetching chart data:', error);
+    }
+  };
+
+  const processDonationsOverTime = (donations) => {
+    // Group donations by date
+    const donationsByDate = {};
+    
+    donations.forEach(donation => {
+      if (donation.status === 'succeeded') {
+        const date = new Date(donation.createdAt).toISOString().split('T')[0]; // Get YYYY-MM-DD format
+        
+        if (!donationsByDate[date]) {
+          donationsByDate[date] = {
+            date,
+            count: 0,
+            amount: 0
+          };
+        }
+        
+        donationsByDate[date].count += 1;
+        donationsByDate[date].amount += parseFloat(donation.amount);
+      }
+    });
+    
+    // Convert to array and sort by date
+    return Object.values(donationsByDate)
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
+      .slice(-30); // Last 30 days
   };
 
   const handleTabChange = (tab) => {
@@ -91,20 +151,29 @@ const AdminDonationsPage = () => {
   const applyFilters = async () => {
     try {
       setLoading(true);
-      const response = await donationService.searchDonations({
-        donorName: filters.donorName || null,
-        donorEmail: filters.donorEmail || null,
-        status: filters.status || null,
-        minAmount: filters.minAmount ? parseFloat(filters.minAmount) : null,
-        maxAmount: filters.maxAmount ? parseFloat(filters.maxAmount) : null,
-        page: currentPage,
-        size: pageSize,
-        sortBy,
-        sortDir
-      });
-      setDonations(response.content || []);
-      setTotalPages(response.totalPages || 0);
-      setTotalElements(response.totalElements || 0);
+      
+      if (activeTab === 'stats') {
+        // For statistics tab, filter the stats by date range
+        await fetchDonationStats();
+      } else {
+        // For all donations tab, apply search filters
+        const response = await donationService.searchDonations({
+          donorName: filters.donorName || null,
+          donorEmail: filters.donorEmail || null,
+          status: filters.status || null,
+          minAmount: filters.minAmount ? parseFloat(filters.minAmount) : null,
+          maxAmount: filters.maxAmount ? parseFloat(filters.maxAmount) : null,
+          startDate: filters.startDate || null,
+          endDate: filters.endDate || null,
+          page: currentPage,
+          size: pageSize,
+          sortBy,
+          sortDir
+        });
+        setDonations(response.content || []);
+        setTotalPages(response.totalPages || 0);
+        setTotalElements(response.totalElements || 0);
+      }
     } catch (err) {
       setError('Failed to apply filters');
     } finally {
@@ -118,10 +187,16 @@ const AdminDonationsPage = () => {
       donorName: '',
       donorEmail: '',
       minAmount: '',
-      maxAmount: ''
+      maxAmount: '',
+      startDate: '',
+      endDate: ''
     });
     setCurrentPage(0);
-    fetchAllDonations();
+    if (activeTab === 'stats') {
+      fetchDonationStats();
+    } else {
+      fetchAllDonations();
+    }
   };
 
   const formatCurrency = (amount, currency = 'EUR') => {
@@ -218,7 +293,7 @@ const AdminDonationsPage = () => {
             {tableData.length === 0 ? (
               <tr>
                 <td colSpan="6" className="px-6 py-8 text-center text-gray-500">
-                  Aucune donation trouvée
+                  Aucun don trouvé
                 </td>
               </tr>
             ) : (
@@ -363,18 +438,18 @@ const AdminDonationsPage = () => {
             <div>
               <h1 className="text-3xl font-bold text-gray-900 flex items-center">
                 <FaHandHoldingHeart className="mr-3" style={{ color: '#00ACA8' }} />
-                Gestion des Donations
+                Gestion des Dons
               </h1>
-              <p className="text-gray-600 mt-1">Visualisez et gérez toutes les donations</p>
+              <p className="text-gray-600 mt-1">Visualisez et gérez toutes les dons</p>
             </div>
             <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="px-4 py-2 bg-white text-gray-700 rounded-lg shadow-md hover:bg-gray-50 flex items-center border"
-              >
-                <FaFilter className="mr-2" />
-                Filtres
-              </button>
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="px-4 py-2 bg-white text-gray-700 rounded-lg shadow-md hover:bg-gray-50 flex items-center border"
+                >
+                  <FaFilter className="mr-2" />
+                  Filtres
+                </button>
             </div>
           </div>
         </div>
@@ -397,17 +472,7 @@ const AdminDonationsPage = () => {
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              Toutes les Donations
-            </button>
-            <button
-              onClick={() => handleTabChange('recent')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-                activeTab === 'recent'
-                  ? 'border-[#00ACA8] text-[#00ACA8]'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              Donations Récentes
+              Tous les Dons
             </button>
             <button
               onClick={() => handleTabChange('stats')}
@@ -425,66 +490,93 @@ const AdminDonationsPage = () => {
         {/* Filters */}
         {showFilters && (
           <div className="mb-6 bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Filtres de Recherche</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">
+              {activeTab === 'stats' ? 'Filtrer les Statistiques' : 'Filtres de Recherche'}
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* Date filters */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Statut</label>
-                <select
-                  value={filters.status}
-                  onChange={(e) => handleFilterChange('status', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00ACA8] focus:border-[#00ACA8]"
-                >
-                  <option value="">Tous les statuts</option>
-                  <option value="succeeded">Réussie</option>
-                  <option value="pending">En attente</option>
-                  <option value="failed">Échouée</option>
-                  <option value="canceled">Annulée</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nom du donateur</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Date de début</label>
                 <input
-                  type="text"
-                  value={filters.donorName}
-                  onChange={(e) => handleFilterChange('donorName', e.target.value)}
-                  placeholder="Rechercher par nom"
+                  type="datetime-local"
+                  value={filters.startDate}
+                  onChange={(e) => handleFilterChange('startDate', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00ACA8] focus:border-[#00ACA8]"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email du donateur</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Date de fin</label>
                 <input
-                  type="email"
-                  value={filters.donorEmail}
-                  onChange={(e) => handleFilterChange('donorEmail', e.target.value)}
-                  placeholder="Rechercher par email"
+                  type="datetime-local"
+                  value={filters.endDate}
+                  onChange={(e) => handleFilterChange('endDate', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00ACA8] focus:border-[#00ACA8]"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Montant minimum</label>
-                <input
-                  type="number"
-                  value={filters.minAmount}
-                  onChange={(e) => handleFilterChange('minAmount', e.target.value)}
-                  placeholder="0.00"
-                  min="0"
-                  step="0.01"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00ACA8] focus:border-[#00ACA8]"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Montant maximum</label>
-                <input
-                  type="number"
-                  value={filters.maxAmount}
-                  onChange={(e) => handleFilterChange('maxAmount', e.target.value)}
-                  placeholder="999999.00"
-                  min="0"
-                  step="0.01"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00ACA8] focus:border-[#00ACA8]"
-                />
-              </div>
+              
+              {/* Additional filters - only show for 'all' tab */}
+              {activeTab === 'all' && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+                    <select
+                      value={filters.status}
+                      onChange={(e) => handleFilterChange('status', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00ACA8] focus:border-[#00ACA8]"
+                    >
+                      <option value="">Tous les statuts</option>
+                      <option value="succeeded">Réussi</option>
+                      <option value="pending">En attente</option>
+                      <option value="failed">Échoué</option>
+                      <option value="canceled">Annulé</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Nom du donateur</label>
+                    <input
+                      type="text"
+                      value={filters.donorName}
+                      onChange={(e) => handleFilterChange('donorName', e.target.value)}
+                      placeholder="Rechercher par nom"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00ACA8] focus:border-[#00ACA8]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email du donateur</label>
+                    <input
+                      type="email"
+                      value={filters.donorEmail}
+                      onChange={(e) => handleFilterChange('donorEmail', e.target.value)}
+                      placeholder="Rechercher par email"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00ACA8] focus:border-[#00ACA8]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Montant minimum</label>
+                    <input
+                      type="number"
+                      value={filters.minAmount}
+                      onChange={(e) => handleFilterChange('minAmount', e.target.value)}
+                      placeholder="0.00"
+                      min="0"
+                      step="0.01"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00ACA8] focus:border-[#00ACA8]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Montant maximum</label>
+                    <input
+                      type="number"
+                      value={filters.maxAmount}
+                      onChange={(e) => handleFilterChange('maxAmount', e.target.value)}
+                      placeholder="999999.00"
+                      min="0"
+                      step="0.01"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#00ACA8] focus:border-[#00ACA8]"
+                    />
+                  </div>
+                </>
+              )}
             </div>
             <div className="mt-4 flex space-x-4">
               <button
@@ -493,7 +585,7 @@ const AdminDonationsPage = () => {
                 style={{ backgroundColor: '#00ACA8' }}
               >
                 <FaSearch className="inline mr-2" />
-                Appliquer les Filtres
+                {activeTab === 'stats' ? 'Filtrer les Statistiques' : 'Appliquer les Filtres'}
               </button>
               <button
                 onClick={clearFilters}
@@ -515,22 +607,11 @@ const AdminDonationsPage = () => {
             {activeTab === 'all' && (
               <DonationTable donations={donations} />
             )}
-
-            {activeTab === 'recent' && (
-              <div>
-                <div className="mb-4">
-                  <h2 className="text-xl font-semibold text-gray-900">Donations Récentes (30 derniers jours)</h2>
-                  <p className="text-gray-600">Affichage des {recentDonations.length} donations les plus récentes</p>
-                </div>
-                <DonationTable donations={recentDonations} showPagination={false} />
-              </div>
-            )}
-
             {activeTab === 'stats' && (
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <StatsCard
-                    title="Total des Donations"
+                    title="Total des Dons"
                     value={donationStats.totalCount || 0}
                     icon={<FaHandHoldingHeart size={24} />}
                   />
@@ -540,12 +621,12 @@ const AdminDonationsPage = () => {
                     icon={<FaChartLine size={24} />}
                   />
                   <StatsCard
-                    title="Donation Moyenne"
+                    title="Dons Moyens"
                     value={formatCurrency(donationStats.averageAmount || 0)}
                     icon={<FaChartLine size={24} />}
                   />
                   <StatsCard
-                    title="Donations Réussies"
+                    title="Dons Réussis"
                     value={donationStats.succeededCount || 0}
                     subtitle={formatCurrency(donationStats.succeededAmount || 0)}
                     icon={<FaHandHoldingHeart size={24} />}
@@ -554,26 +635,74 @@ const AdminDonationsPage = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <StatsCard
-                    title="Donations en Attente"
+                    title="Dons en Attente"
                     value={donationStats.pendingCount || 0}
                     subtitle={formatCurrency(donationStats.pendingAmount || 0)}
                     icon={<FaChartLine size={24} />}
                     color="#f59e0b"
                   />
                   <StatsCard
-                    title="Donations Échouées"
+                    title="Dons Échoués"
                     value={donationStats.failedCount || 0}
                     subtitle={formatCurrency(donationStats.failedAmount || 0)}
                     icon={<FaChartLine size={24} />}
                     color="#ef4444"
                   />
                   <StatsCard
-                    title="Donations Annulées"
+                    title="Dons Annulés"
                     value={donationStats.canceledCount || 0}
                     subtitle={formatCurrency(donationStats.canceledAmount || 0)}
                     icon={<FaChartLine size={24} />}
                     color="#6b7280"
                   />
+                </div>
+
+                {/* Charts Section */}
+                <div className="space-y-6">
+                  {/* Donations Over Time Chart */}
+                  <div className="bg-white rounded-lg shadow-md p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Évolution des Dons dans le Temps</h3>
+                    <div className="h-80">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={donationsOverTime}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis 
+                            dataKey="date" 
+                            tick={{ fontSize: 12 }}
+                            tickFormatter={(value) => new Date(value).toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' })}
+                          />
+                          <YAxis yAxisId="left" tick={{ fontSize: 12 }} />
+                          <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12 }} />
+                          <Tooltip 
+                            labelFormatter={(value) => new Date(value).toLocaleDateString('fr-FR')}
+                            formatter={(value, name) => [
+                              name === 'Montant Total (€)' ? formatCurrency(value) : value,
+                              name === 'Montant Total (€)' ? 'Montant Total' : 'Nombre de Dons'
+                            ]}
+                          />
+                          <Legend />
+                          <Line 
+                            yAxisId="right"
+                            type="monotone" 
+                            dataKey="count" 
+                            stroke="#00ACA8" 
+                            strokeWidth={3}
+                            name="Nombre de Dons"
+                            dot={{ fill: '#00ACA8', strokeWidth: 2, r: 4 }}
+                          />
+                          <Line 
+                            yAxisId="left"
+                            type="monotone" 
+                            dataKey="amount" 
+                            stroke="#f59e0b" 
+                            strokeWidth={3}
+                            name="Montant Total (€)"
+                            dot={{ fill: '#f59e0b', strokeWidth: 2, r: 4 }}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

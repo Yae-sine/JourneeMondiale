@@ -95,32 +95,83 @@ public class DonationService {
 
     // Get donation statistics
     public Map<String, Object> getDonationStatistics() {
+        return getDonationStatistics(null, null);
+    }
+
+    // Get donation statistics with date filtering
+    public Map<String, Object> getDonationStatistics(LocalDateTime startDate, LocalDateTime endDate) {
         Map<String, Object> stats = new HashMap<>();
         
-        // Get basic statistics
-        Object[] result = (Object[]) donationRepository.getDonationStatistics();
-        if (result != null && result.length >= 3) {
-            Long count = (Long) result[0];
-            BigDecimal sum = (BigDecimal) result[1];
-            Double avg = ((Number) result[2]).doubleValue();
-            stats.put("totalCount", count);
-            stats.put("totalAmount", sum);
-            stats.put("averageAmount", avg);
+        if (startDate != null || endDate != null) {
+            // Get filtered statistics by date range
+            List<Donation> filteredDonations = donationRepository.findByCreatedAtBetween(
+                startDate != null ? startDate : LocalDateTime.of(1970, 1, 1, 0, 0),
+                endDate != null ? endDate : LocalDateTime.now()
+            );
+            
+            // Calculate statistics from filtered donations
+            long totalCount = filteredDonations.stream()
+                .filter(d -> "succeeded".equals(d.getStatus()))
+                .count();
+            
+            BigDecimal totalAmount = filteredDonations.stream()
+                .filter(d -> "succeeded".equals(d.getStatus()))
+                .map(Donation::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+            
+            double averageAmount = totalCount > 0 ? totalAmount.doubleValue() / totalCount : 0.0;
+            
+            stats.put("totalCount", totalCount);
+            stats.put("totalAmount", totalAmount);
+            stats.put("averageAmount", averageAmount);
+            
+            // Get status counts from filtered donations
+            stats.put("succeededCount", filteredDonations.stream()
+                .filter(d -> "succeeded".equals(d.getStatus())).count());
+            stats.put("pendingCount", filteredDonations.stream()
+                .filter(d -> "pending".equals(d.getStatus())).count());
+            stats.put("failedCount", filteredDonations.stream()
+                .filter(d -> "failed".equals(d.getStatus())).count());
+            
+            // Get amounts by status from filtered donations
+            stats.put("succeededAmount", filteredDonations.stream()
+                .filter(d -> "succeeded".equals(d.getStatus()))
+                .map(Donation::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+            stats.put("pendingAmount", filteredDonations.stream()
+                .filter(d -> "pending".equals(d.getStatus()))
+                .map(Donation::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+            stats.put("failedAmount", filteredDonations.stream()
+                .filter(d -> "failed".equals(d.getStatus()))
+                .map(Donation::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         } else {
-            stats.put("totalCount", 0L);
-            stats.put("totalAmount", BigDecimal.ZERO);
-            stats.put("averageAmount", BigDecimal.ZERO);}
-        
-        
-        // Get total amount by status
-        stats.put("succeededAmount", donationRepository.getTotalAmountByStatus("succeeded"));
-        stats.put("pendingAmount", donationRepository.getTotalAmountByStatus("pending"));
-        stats.put("failedAmount", donationRepository.getTotalAmountByStatus("failed"));
-        
-        // Get count by status
-        stats.put("succeededCount", donationRepository.findByStatus("succeeded").size());
-        stats.put("pendingCount", donationRepository.findByStatus("pending").size());
-        stats.put("failedCount", donationRepository.findByStatus("failed").size());
+            // Get basic statistics (original logic)
+            Object[] result = (Object[]) donationRepository.getDonationStatistics();
+            if (result != null && result.length >= 3) {
+                Long count = (Long) result[0];
+                BigDecimal sum = (BigDecimal) result[1];
+                Double avg = ((Number) result[2]).doubleValue();
+                stats.put("totalCount", count);
+                stats.put("totalAmount", sum);
+                stats.put("averageAmount", avg);
+            } else {
+                stats.put("totalCount", 0L);
+                stats.put("totalAmount", BigDecimal.ZERO);
+                stats.put("averageAmount", BigDecimal.ZERO);
+            }
+            
+            // Get total amount by status
+            stats.put("succeededAmount", donationRepository.getTotalAmountByStatus("succeeded"));
+            stats.put("pendingAmount", donationRepository.getTotalAmountByStatus("pending"));
+            stats.put("failedAmount", donationRepository.getTotalAmountByStatus("failed"));
+            
+            // Get count by status
+            stats.put("succeededCount", donationRepository.findByStatus("succeeded").size());
+            stats.put("pendingCount", donationRepository.findByStatus("pending").size());
+            stats.put("failedCount", donationRepository.findByStatus("failed").size());
+        }
         
         return stats;
     }

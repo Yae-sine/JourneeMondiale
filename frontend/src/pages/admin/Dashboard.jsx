@@ -92,7 +92,7 @@ const AdminDashboard = () => {
                   Bienvenue dans le Panneau d'Administration de Gustave Roussey
                 </h3>
                 <p className="text-gray-600">
-                  Surveillez et gérez les activités, utilisateurs et donations de votre plateforme en un seul endroit.
+                  Surveillez et gérez les activités, utilisateurs et dons de votre plateforme en un seul endroit.
                 </p>
               </div>
             </div>
@@ -110,7 +110,7 @@ const AdminDashboard = () => {
           />
           
           <StatCard
-            title="Total Donations"
+            title="Total Dons"
             value={stats.totalDonations.toLocaleString()}
             icon={<FaHandHoldingHeart size={24} />}
             color="#00ACA8"
@@ -161,7 +161,7 @@ const AdminDashboard = () => {
           {/* Recent Donations */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Donations Récentes
+              Dons Récentes
             </h3>
             <div className="space-y-3">
               {[

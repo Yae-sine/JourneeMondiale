@@ -325,7 +325,7 @@ const Profile = () => {
                 {/* Change Password Tab */}
                   {activeTab === 'password' && (
                     <form onSubmit={handlePasswordSubmit} className="space-y-10">
-                      <div className="max-w-lg space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 space-y-6">
                         <div>
                           <label className="block text-base font-semibold text-gray-700 mb-3">
                             Ancien mot de passe
@@ -348,6 +348,7 @@ const Profile = () => {
                             </button>
                           </div>
                         </div>
+                        <div></div>
                         <div>
                           <label className="block text-base font-semibold text-gray-700 mb-3">
                             Nouveau mot de passe

@@ -23,7 +23,7 @@ const UserSidebar = () => {
     },
     {
       id: 'donations',
-      title: 'Mes Donations',
+      title: 'Mes Dons',
       icon: <FaHandHoldingHeart size={20} />,
       path: '/account/donations'
     },

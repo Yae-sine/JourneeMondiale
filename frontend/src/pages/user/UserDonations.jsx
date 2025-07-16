@@ -85,7 +85,7 @@ const UserDonations = () => {
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2" >
                   <FaHandHoldingHeart className="inline mr-3"style={{ color: '#00ACA8' }} />
-                  Mes Donations
+                  Mes Dons
                 </h1>
                 <p className="text-gray-600">Suivez l'historique de vos contributions</p>
               </div>
@@ -95,7 +95,7 @@ const UserDonations = () => {
                 style={{ backgroundColor: '#00ACA8' }}
               >
                 <FaPlus className="mr-2" />
-                Faire une nouvelle donation
+                Faire un nouveau don
               </button>
             </div>
           </div>
@@ -106,7 +106,7 @@ const UserDonations = () => {
               <div className="bg-white rounded-lg shadow-md p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Total des donations</p>
+                    <p className="text-sm font-medium text-gray-600">Total des dons</p>
                     <p className="text-2xl font-bold text-gray-900">{statistics.totalCount || 0}</p>
                   </div>
                   <FaChartLine className="text-3xl" style={{ color: '#00ACA8' }} />
@@ -128,7 +128,7 @@ const UserDonations = () => {
               <div className="bg-white rounded-lg shadow-md p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Donations réussies</p>
+                    <p className="text-sm font-medium text-gray-600">Dons réussis</p>
                     <p className="text-2xl font-bold text-green-600">{statistics.succeededCount || 0}</p>
                   </div>
                   <FaCheckCircle className="text-3xl text-green-500" />
@@ -157,28 +157,28 @@ const UserDonations = () => {
           {/* Donations List */}
           <div className="bg-white rounded-lg shadow-md">
             <div className="p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">Historique des donations</h2>
+              <h2 className="text-xl font-semibold text-gray-900">Historique des dons</h2>
             </div>
 
             <div className="p-6">
               {loading ? (
                 <div className="text-center py-8">
                   <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: '#00ACA8' }}></div>
-                  <p className="mt-2 text-gray-600">Chargement des donations...</p>
+                  <p className="mt-2 text-gray-600">Chargement des dons...</p>
                 </div>
               ) : donations.length === 0 ? (
                 <div className="text-center py-12">
                   <FaHandHoldingHeart className="mx-auto text-6xl text-gray-300 mb-4" />
-                  <h3 className="text-xl font-medium text-gray-900 mb-2">Aucune donation trouvée</h3>
+                  <h3 className="text-xl font-medium text-gray-900 mb-2">Aucun don trouvé</h3>
                   <p className="text-gray-600 mb-6">
-                    Vous n'avez pas encore fait de donation. Commencez dès maintenant !
+                    Vous n'avez pas encore fait de don. Commencez dès maintenant !
                   </p>
                   <button
                     onClick={() => navigate('/donation')}
                     className="px-6 py-3 text-white rounded-lg font-medium transition-colors hover:opacity-90"
                     style={{ backgroundColor: '#00ACA8' }}
                   >
-                    Faire ma première donation
+                    Faire mon premier don
                   </button>
                 </div>
               ) : (

@@ -114,7 +114,7 @@ const AdminSubscriptionsPage = () => {
                 color="#10B981"
               />
               <StatCard 
-                title="Donations Mensuelles"
+                title="Dons Mensuels"
                 value={subscriptionService.formatCurrency(statistics.monthlyDonations)}
                 icon={<FaMoneyBillWave size={24} />}
                 color="#8B5CF6"
