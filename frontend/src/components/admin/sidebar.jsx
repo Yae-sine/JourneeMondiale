@@ -18,31 +18,31 @@ const AdminSidebar = () => {
   const menuItems = [
     {
       id: 'dashboard',
-      title: 'Dashboard',
+      title: 'Tableau de bord',
       icon: <FaTachometerAlt size={20} />,
       path: '/admin/dashboard'
     },
     {
       id: 'users',
-      title: 'All Users',
+      title: 'Utilisateurs',
       icon: <FaUsers size={20} />,
       path: '/admin/users'
     },
     {
       id: 'donations',
-      title: 'Donations',
+      title: 'Dons',
       icon: <FaHandHoldingHeart size={20} />,
       path: '/admin/donations'
     },
     {
       id: 'subscriptions',
-      title: 'Subscriptions',
+      title: 'Abonnements',
       icon: <FaRegCreditCard size={20} />,
       path: '/admin/subscriptions'
     },
     {
       id: 'posts',
-      title: 'Social Media Posts',
+      title: 'Publications',
       icon: <FaShareAlt size={20} />,
       path: '/admin/posts'
     }

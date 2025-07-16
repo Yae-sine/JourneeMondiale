@@ -78,13 +78,13 @@ const UserDonations = () => {
     <div className="flex min-h-screen bg-gray-50">
       <UserSidebar />
       <div className="flex-1 p-8">
-        <div className="max-w-6xl mx-auto">
+        <div className="mx-auto">
           {/* Header */}
-          <div className="bg-white rounded-lg shadow-md p-8 mb-6">
-            <div className="flex justify-between items-center">
+          <div className="bg-white mb-8">
+            <div className="flex justify-between items-center mb-4">
               <div>
-                <h1 className="text-3xl font-bold mb-2" style={{ color: '#00ACA8' }}>
-                  <FaHandHoldingHeart className="inline mr-3" />
+                <h1 className="text-3xl font-bold text-gray-900 mb-2" >
+                  <FaHandHoldingHeart className="inline mr-3"style={{ color: '#00ACA8' }} />
                   Mes Donations
                 </h1>
                 <p className="text-gray-600">Suivez l'historique de vos contributions</p>

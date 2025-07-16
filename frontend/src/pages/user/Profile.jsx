@@ -106,11 +106,11 @@ const Profile = () => {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <UserSidebar />
-      <div className="flex-1 p-12">
-        <div className="max-w-5xl mx-auto">
+      <div className="flex-1 p-8">
+        <div className="mx-auto">
           {/* Header */}
-          <div className="bg-white rounded-lg shadow-md p-12 mb-8">
-            <h1 className="text-4xl font-bold mb-4" style={{ color: '#00ACA8' }}>
+          <div className="bg-white mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2" >
               Mon Profil
             </h1>
             <p className="text-lg text-gray-600">Gérez vos informations personnelles et votre sécurité</p>
