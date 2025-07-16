@@ -236,16 +236,13 @@ const UserSubscription = () => {
                   {/* Tab Content */}
                   {activeTab === 'overview' && (
                     <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
-                      <div className="bg-gradient-to-br from-cyan-300 via-teal-500 to-cyan-600 px-12 py-8 text-white">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h2 className="text-3xl font-bold mb-2">Abonnement Actuel</h2>
-                            <p className="text-lg opacity-90">Merci de soutenir notre cause !</p>
-                          </div>
-                          <FaCrown className="text-6xl opacity-80" />
+                      <div className="flex items-center px-6 py-4 border-b border-gray-100">
+                        <div>
+                          <h2 className="text-2xl font-bold text-gray-700 mb-1">Abonnement Actuel</h2>
+                          <p className="text-base text-gray-600">Merci de soutenir notre cause !</p>
                         </div>
                       </div>
-                      <div className="p-12">
+                      <div className="p-8">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                           <div className="text-center">
                             <div className="flex items-center justify-center mb-3">
@@ -325,7 +322,7 @@ const UserSubscription = () => {
                     </div>
                   )}
                   {activeTab === 'details' && (
-                    <div className="bg-white rounded-lg shadow-md p-12 mb-8">
+                    <div className="bg-white rounded-lg shadow-md px-6 py-4 mb-8">
                       <h3 className="text-2xl font-bold text-gray-900 mb-8">Détails de l'abonnement</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div>
