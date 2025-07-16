@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { FaHandHoldingHeart, FaFilter, FaSort, FaEye, FaChartLine, FaSearch } from 'react-icons/fa';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
+import { FaHandHoldingHeart, FaFilter, FaSort, FaEye, FaChartLine, FaSearch, FaCalendarWeek, FaCalendarAlt, FaCalendar } from 'react-icons/fa';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend, AreaChart, Area, Brush, ReferenceLine, Cell } from 'recharts';
 import AdminSidebar from '../../components/admin/sidebar';
 import { donationService } from '../../services/donationService';
 
@@ -13,6 +13,12 @@ const AdminDonationsPage = () => {
   
   // Chart data states
   const [donationsOverTime, setDonationsOverTime] = useState([]);
+  // const [topDonors, setTopDonors] = useState([]); // Removed: Top Donors chart not needed
+  const [monthlyTotals, setMonthlyTotals] = useState([]);
+  
+  // Chart customization states
+  const [timePeriod, setTimePeriod] = useState('month'); // 'month', 'year' (week removed)
+  const [chartType, setChartType] = useState('area'); // 'area', 'line', 'bar'
   
   // Pagination and filtering states
   const [currentPage, setCurrentPage] = useState(0);
@@ -36,7 +42,13 @@ const AdminDonationsPage = () => {
 
   useEffect(() => {
     fetchData();
-  }, [activeTab, currentPage, pageSize, sortBy, sortDir]);
+  }, [activeTab, currentPage, pageSize, sortBy, sortDir, timePeriod]);
+
+  useEffect(() => {
+    if (activeTab === 'stats') {
+      fetchChartData();
+    }
+  }, [filters.startDate, filters.endDate, timePeriod]);
 
   const fetchData = async () => {
     try {
@@ -95,39 +107,95 @@ const AdminDonationsPage = () => {
         });
       }
       
-      // Process donations over time
-      const donationsOverTimeData = processDonationsOverTime(filteredDonations);
+      // Process donations over time based on selected period
+      const donationsOverTimeData = processDonationsOverTime(filteredDonations, timePeriod);
       setDonationsOverTime(donationsOverTimeData);
+      
+      // Removed: Top Donors processing
+      
+      // Process monthly totals for bar chart
+      const monthlyTotalsData = processMonthlyTotals(filteredDonations);
+      setMonthlyTotals(monthlyTotalsData);
     } catch (error) {
       console.error('Error fetching chart data:', error);
     }
   };
 
-  const processDonationsOverTime = (donations) => {
-    // Group donations by date
+  const processDonationsOverTime = (donations, period = 'month') => {
+    // Group donations by date based on period
     const donationsByDate = {};
+    const now = new Date();
+    
+    // Calculate date range based on period
+    let startDate, dateFormat, groupFormat;
+    switch (period) {
+      case 'year':
+        startDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+        dateFormat = 'YYYY-MM';
+        groupFormat = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        break;
+      default: // month
+        startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        dateFormat = 'YYYY-MM-DD';
+        groupFormat = (date) => date.toISOString().split('T')[0];
+    }
     
     donations.forEach(donation => {
       if (donation.status === 'succeeded') {
-        const date = new Date(donation.createdAt).toISOString().split('T')[0]; // Get YYYY-MM-DD format
-        
-        if (!donationsByDate[date]) {
-          donationsByDate[date] = {
-            date,
-            count: 0,
-            amount: 0
-          };
+        const donationDate = new Date(donation.createdAt);
+        if (donationDate >= startDate) {
+          const dateKey = groupFormat(donationDate);
+          
+          if (!donationsByDate[dateKey]) {
+            donationsByDate[dateKey] = {
+              date: dateKey,
+              count: 0,
+              amount: 0
+            };
+          }
+          
+          donationsByDate[dateKey].count += 1;
+          donationsByDate[dateKey].amount += parseFloat(donation.amount);
         }
-        
-        donationsByDate[date].count += 1;
-        donationsByDate[date].amount += parseFloat(donation.amount);
       }
     });
     
     // Convert to array and sort by date
     return Object.values(donationsByDate)
-      .sort((a, b) => new Date(a.date) - new Date(b.date))
-      .slice(-30); // Last 30 days
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+  };
+
+  // Removed: processTopDonors function (Top Donors chart not needed)
+
+  const processMonthlyTotals = (donations) => {
+    const monthlyData = {};
+    const now = new Date();
+    
+    // Get last 12 months
+    for (let i = 11; i >= 0; i--) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      monthlyData[monthKey] = {
+        month: monthKey,
+        monthName: date.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' }),
+        total: 0,
+        count: 0
+      };
+    }
+    
+    donations.forEach(donation => {
+      if (donation.status === 'succeeded') {
+        const donationDate = new Date(donation.createdAt);
+        const monthKey = `${donationDate.getFullYear()}-${String(donationDate.getMonth() + 1).padStart(2, '0')}`;
+        
+        if (monthlyData[monthKey]) {
+          monthlyData[monthKey].total += parseFloat(donation.amount);
+          monthlyData[monthKey].count += 1;
+        }
+      }
+    });
+    
+    return Object.values(monthlyData);
   };
 
   const handleTabChange = (tab) => {
@@ -200,10 +268,21 @@ const AdminDonationsPage = () => {
   };
 
   const formatCurrency = (amount, currency = 'EUR') => {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: currency
-    }).format(amount);
+    // Guard: Only format if amount is a finite number and currency is a valid string
+    if (typeof amount !== 'number') {
+      amount = Number(amount);
+    }
+    if (!isFinite(amount)) return '';
+    // Only allow valid 3-letter currency codes
+    if (typeof currency !== 'string' || currency.length !== 3) currency = 'EUR';
+    try {
+      return new Intl.NumberFormat('fr-FR', {
+        style: 'currency',
+        currency: currency
+      }).format(amount);
+    } catch (e) {
+      return amount;
+    }
   };
 
   const formatDate = (dateString) => {
@@ -658,51 +737,384 @@ const AdminDonationsPage = () => {
                 </div>
 
                 {/* Charts Section */}
-                <div className="space-y-6">
-                  {/* Donations Over Time Chart */}
+                <div className="space-y-8">
+                  {/* Time Period Controls */}
                   <div className="bg-white rounded-lg shadow-md p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Évolution des Dons dans le Temps</h3>
-                    <div className="h-80">
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-lg font-semibold text-gray-900">Analyse Temporelle</h3>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => setTimePeriod('month')}
+                          className={`px-4 py-2 rounded-lg flex items-center space-x-2 transition-all ${
+                            timePeriod === 'month'
+                              ? 'bg-[#00ACA8] text-white shadow-lg'
+                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
+                        >
+                          <FaCalendarAlt />
+                          <span>Mois</span>
+                        </button>
+                        <button
+                          onClick={() => setTimePeriod('year')}
+                          className={`px-4 py-2 rounded-lg flex items-center space-x-2 transition-all ${
+                            timePeriod === 'year'
+                              ? 'bg-[#00ACA8] text-white shadow-lg'
+                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
+                        >
+                          <FaCalendar />
+                          <span>Année</span>
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Chart Type Toggle */}
+                    <div className="flex space-x-3 mb-4">
+                      <button
+                        onClick={() => setChartType('area')}
+                        className={`px-3 py-1 rounded text-sm transition-all ${
+                          chartType === 'area'
+                            ? 'bg-[#00ACA8] text-white'
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                      >
+                        Zone
+                      </button>
+                      <button
+                        onClick={() => setChartType('line')}
+                        className={`px-3 py-1 rounded text-sm transition-all ${
+                          chartType === 'line'
+                            ? 'bg-[#00ACA8] text-white'
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                      >
+                        Ligne
+                      </button>
+                      <button
+                        onClick={() => setChartType('bar')}
+                        className={`px-3 py-1 rounded text-sm transition-all ${
+                          chartType === 'bar'
+                            ? 'bg-[#00ACA8] text-white'
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                      >
+                        Barres
+                      </button>
+                    </div>
+
+                    {/* Advanced Area/Line Chart */}
+                    <div className="h-96">
                       <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={donationsOverTime}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis 
-                            dataKey="date" 
-                            tick={{ fontSize: 12 }}
-                            tickFormatter={(value) => new Date(value).toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' })}
-                          />
-                          <YAxis yAxisId="left" tick={{ fontSize: 12 }} />
-                          <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12 }} />
-                          <Tooltip 
-                            labelFormatter={(value) => new Date(value).toLocaleDateString('fr-FR')}
-                            formatter={(value, name) => [
-                              name === 'Montant Total (€)' ? formatCurrency(value) : value,
-                              name === 'Montant Total (€)' ? 'Montant Total' : 'Nombre de Dons'
-                            ]}
-                          />
-                          <Legend />
-                          <Line 
-                            yAxisId="right"
-                            type="monotone" 
-                            dataKey="count" 
-                            stroke="#00ACA8" 
-                            strokeWidth={3}
-                            name="Nombre de Dons"
-                            dot={{ fill: '#00ACA8', strokeWidth: 2, r: 4 }}
-                          />
-                          <Line 
-                            yAxisId="left"
-                            type="monotone" 
-                            dataKey="amount" 
-                            stroke="#f59e0b" 
-                            strokeWidth={3}
-                            name="Montant Total (€)"
-                            dot={{ fill: '#f59e0b', strokeWidth: 2, r: 4 }}
-                          />
-                        </LineChart>
+                        {chartType === 'area' ? (
+                          <AreaChart data={donationsOverTime} margin={{ top: 20, right: 40, left: 20, bottom: 60 }}>
+                            <defs>
+                              <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#00ACA8" stopOpacity={0.8}/>
+                                <stop offset="95%" stopColor="#00ACA8" stopOpacity={0.1}/>
+                              </linearGradient>
+                              <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.8}/>
+                                <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.1}/>
+                              </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" opacity={0.7} />
+                            <XAxis 
+                              dataKey="date" 
+                              tick={{ fontSize: 13, fill: '#374151' }}
+                              tickFormatter={(value) => {
+                                const date = new Date(value);
+                                return timePeriod === 'year' 
+                                  ? date.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })
+                                  : date.toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' });
+                              }}
+                              axisLine={{ stroke: '#d1d5db' }}
+                              tickLine={false}
+                              interval="preserveStartEnd"
+                            />
+                            <YAxis 
+                              yAxisId="left" 
+                              tick={{ fontSize: 13, fill: '#374151' }} 
+                              axisLine={{ stroke: '#d1d5db' }}
+                              tickLine={false}
+                              width={80}
+                              tickFormatter={formatCurrency}
+                            />
+                            <YAxis 
+                              yAxisId="right" 
+                              orientation="right" 
+                              tick={{ fontSize: 13, fill: '#374151' }} 
+                              axisLine={{ stroke: '#d1d5db' }}
+                              tickLine={false}
+                              width={60}
+                            />
+                            <Tooltip 
+                              contentStyle={{ 
+                                background: 'rgba(255, 255, 255, 0.95)', 
+                                borderRadius: 12, 
+                                border: '1px solid #e5e7eb', 
+                                fontSize: 14,
+                                boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)'
+                              }}
+                              labelStyle={{ fontWeight: 600, color: '#00ACA8', marginBottom: 8 }}
+                              labelFormatter={(value) => `Date : ${new Date(value).toLocaleDateString('fr-FR', { 
+                                weekday: 'short', 
+                                year: 'numeric', 
+                                month: 'short', 
+                                day: 'numeric' 
+                              })}`}
+                              formatter={(value, name, props) => {
+                                if (props.dataKey === 'amount') return [formatCurrency(value), 'Montant Total'];
+                                if (props.dataKey === 'count') return [value, 'Nombre de Dons'];
+                                return [value, name];
+                              }}
+                              separator=" : "
+                            />
+                            <Legend 
+                              verticalAlign="top" 
+                              height={36} 
+                              iconType="circle"
+                              wrapperStyle={{ paddingBottom: '20px' }}
+                            />
+                            <Area 
+                              yAxisId="left"
+                              type="monotone"
+                              dataKey="amount"
+                              name="Montant Total (€)"
+                              stroke="#00ACA8"
+                              fillOpacity={1}
+                              fill="url(#colorAmount)"
+                              strokeWidth={3}
+                              dot={{ r: 6, fill: '#00ACA8', stroke: '#fff', strokeWidth: 3 }}
+                              activeDot={{ r: 8, fill: '#00ACA8', stroke: '#fff', strokeWidth: 3 }}
+                            />
+                            <Area 
+                              yAxisId="right"
+                              type="monotone"
+                              dataKey="count"
+                              name="Nombre de Dons"
+                              stroke="#f59e0b"
+                              fillOpacity={1}
+                              fill="url(#colorCount)"
+                              strokeWidth={3}
+                              dot={{ r: 6, fill: '#f59e0b', stroke: '#fff', strokeWidth: 3 }}
+                              activeDot={{ r: 8, fill: '#f59e0b', stroke: '#fff', strokeWidth: 3 }}
+                            />
+                            <Brush 
+                              dataKey="date" 
+                              height={60} 
+                              stroke="#00ACA8"
+                              fill="rgba(0, 172, 168, 0.1)"
+                              tickFormatter={(value) => {
+                                const date = new Date(value);
+                                return date.toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' });
+                              }}
+                            />
+                          </AreaChart>
+                        ) : chartType === 'line' ? (
+                          <LineChart data={donationsOverTime} margin={{ top: 20, right: 40, left: 20, bottom: 60 }}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" opacity={0.7} />
+                            <XAxis 
+                              dataKey="date" 
+                              tick={{ fontSize: 13, fill: '#374151' }}
+                              tickFormatter={(value) => {
+                                const date = new Date(value);
+                                return timePeriod === 'year' 
+                                  ? date.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })
+                                  : date.toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' });
+                              }}
+                              axisLine={{ stroke: '#d1d5db' }}
+                              tickLine={false}
+                            />
+                            <YAxis 
+                              yAxisId="left" 
+                              tick={{ fontSize: 13, fill: '#374151' }} 
+                              axisLine={{ stroke: '#d1d5db' }}
+                              tickLine={false}
+                              width={80}
+                              tickFormatter={formatCurrency}
+                            />
+                            <YAxis 
+                              yAxisId="right" 
+                              orientation="right" 
+                              tick={{ fontSize: 13, fill: '#374151' }} 
+                              axisLine={{ stroke: '#d1d5db' }}
+                              tickLine={false}
+                              width={60}
+                            />
+                            <Tooltip 
+                              contentStyle={{ 
+                                background: 'rgba(255, 255, 255, 0.95)', 
+                                borderRadius: 12, 
+                                border: '1px solid #e5e7eb', 
+                                fontSize: 14,
+                                boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)'
+                              }}
+                              labelStyle={{ fontWeight: 600, color: '#00ACA8' }}
+                              formatter={(value, name, props) => {
+                                if (props.dataKey === 'amount') return [formatCurrency(value), 'Montant Total'];
+                                if (props.dataKey === 'count') return [value, 'Nombre de Dons'];
+                                return [value, name];
+                              }}
+                            />
+                            <Legend verticalAlign="top" height={36} iconType="circle" />
+                            <Line 
+                              yAxisId="left"
+                              type="monotone"
+                              dataKey="amount"
+                              name="Montant Total (€)"
+                              stroke="#00ACA8"
+                              strokeWidth={4}
+                              dot={{ r: 6, fill: '#00ACA8', stroke: '#fff', strokeWidth: 3 }}
+                              activeDot={{ r: 8, fill: '#00ACA8', stroke: '#fff', strokeWidth: 3 }}
+                            />
+                            <Line 
+                              yAxisId="right"
+                              type="monotone"
+                              dataKey="count"
+                              name="Nombre de Dons"
+                              stroke="#f59e0b"
+                              strokeWidth={4}
+                              dot={{ r: 6, fill: '#f59e0b', stroke: '#fff', strokeWidth: 3 }}
+                              activeDot={{ r: 8, fill: '#f59e0b', stroke: '#fff', strokeWidth: 3 }}
+                            />
+                            <Brush 
+                              dataKey="date" 
+                              height={60} 
+                              stroke="#00ACA8"
+                              fill="rgba(0, 172, 168, 0.1)"
+                            />
+                          </LineChart>
+                        ) : (
+                          <BarChart data={donationsOverTime} margin={{ top: 20, right: 40, left: 20, bottom: 60 }}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" opacity={0.7} />
+                            <XAxis 
+                              dataKey="date" 
+                              tick={{ fontSize: 13, fill: '#374151' }}
+                              tickFormatter={(value) => {
+                                const date = new Date(value);
+                                return timePeriod === 'year' 
+                                  ? date.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })
+                                  : date.toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' });
+                              }}
+                              axisLine={{ stroke: '#d1d5db' }}
+                              tickLine={false}
+                            />
+                            <YAxis 
+                              yAxisId="left" 
+                              tick={{ fontSize: 13, fill: '#374151' }} 
+                              axisLine={{ stroke: '#d1d5db' }}
+                              tickLine={false}
+                              width={80}
+                              tickFormatter={formatCurrency}
+                            />
+                            <YAxis 
+                              yAxisId="right" 
+                              orientation="right" 
+                              tick={{ fontSize: 13, fill: '#374151' }} 
+                              axisLine={{ stroke: '#d1d5db' }}
+                              tickLine={false}
+                              width={60}
+                            />
+                            <Tooltip 
+                              contentStyle={{ 
+                                background: 'rgba(255, 255, 255, 0.95)', 
+                                borderRadius: 12, 
+                                border: '1px solid #e5e7eb', 
+                                fontSize: 14,
+                                boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)'
+                              }}
+                              labelStyle={{ fontWeight: 600, color: '#00ACA8' }}
+                              formatter={(value, name, props) => {
+                                if (props.dataKey === 'amount') return [formatCurrency(value), 'Montant Total'];
+                                if (props.dataKey === 'count') return [value, 'Nombre de Dons'];
+                                return [value, name];
+                              }}
+                            />
+                            <Legend verticalAlign="top" height={36} iconType="rect" />
+                            <Bar 
+                              yAxisId="left"
+                              dataKey="amount"
+                              name="Montant Total (€)"
+                              fill="#00ACA8"
+                              radius={[4, 4, 0, 0]}
+                              maxBarSize={60}
+                            />
+                            <Bar 
+                              yAxisId="right"
+                              dataKey="count"
+                              name="Nombre de Dons"
+                              fill="#f59e0b"
+                              radius={[4, 4, 0, 0]}
+                              maxBarSize={60}
+                            />
+                            <Brush 
+                              dataKey="date" 
+                              height={60} 
+                              stroke="#00ACA8"
+                              fill="rgba(0, 172, 168, 0.1)"
+                            />
+                          </BarChart>
+                        )}
                       </ResponsiveContainer>
                     </div>
                   </div>
+
+                  {/* Monthly Bar Chart */}
+                  <div className="bg-white rounded-lg shadow-md p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-6">Montants Totaux par Mois</h3>
+                    <div className="h-80">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={monthlyTotals} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" opacity={0.7} />
+                          <XAxis 
+                            dataKey="monthName" 
+                            tick={{ fontSize: 12, fill: '#374151' }}
+                            axisLine={{ stroke: '#d1d5db' }}
+                            tickLine={false}
+                            angle={-45}
+                            textAnchor="end"
+                            height={80}
+                          />
+                          <YAxis 
+                            tick={{ fontSize: 13, fill: '#374151' }} 
+                            axisLine={{ stroke: '#d1d5db' }}
+                            tickLine={false}
+                            width={80}
+                            tickFormatter={formatCurrency}
+                          />
+                          <Tooltip 
+                            contentStyle={{ 
+                              background: 'rgba(255, 255, 255, 0.95)', 
+                              borderRadius: 12, 
+                              border: '1px solid #e5e7eb', 
+                              fontSize: 14,
+                              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)'
+                            }}
+                            labelStyle={{ fontWeight: 600, color: '#00ACA8' }}
+                            formatter={(value, name) => [formatCurrency(value), 'Montant Total']}
+                          />
+                          <Bar 
+                            dataKey="total"
+                            fill="#00ACA8"
+                            radius={[6, 6, 0, 0]}
+                            maxBarSize={50}
+                          >
+                            {monthlyTotals.map((entry, index) => (
+                              <Cell 
+                                key={`cell-${index}`} 
+                                fill={`hsl(${174}, ${70 + (index * 3)}%, ${45 + (index * 2)}%)`}
+                              />
+                            ))}
+                          </Bar>
+                          <ReferenceLine y={0} stroke="#374151" strokeDasharray="2 2" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+
+                  {/* Removed: Top Donors Chart */
+                  // Top Donors chart and related logic have been removed as requested.
+                  }
                 </div>
               </div>
             )}
