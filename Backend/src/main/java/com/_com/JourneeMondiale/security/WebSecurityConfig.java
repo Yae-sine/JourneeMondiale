@@ -73,6 +73,7 @@ public class WebSecurityConfig {
             .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
             .defaultSuccessUrl("/api/auth/oauth2/success", true)
             .failureUrl("/api/auth/oauth2/failure")
+            .tokenEndpoint(tokenEndpoint -> tokenEndpoint.accessTokenResponseClient(linkedInAccessTokenResponseClient()))
         );
     // fix H2 database console: Refused to display ' in a frame because it set 'X-Frame-Options' to 'deny'
     http.headers(headers -> headers.frameOptions(frameOption -> frameOption.sameOrigin()));
@@ -80,6 +81,10 @@ public class WebSecurityConfig {
     http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     
     return http.build();
+  }
+  @Bean
+  public LinkedInAccessTokenResponseClient linkedInAccessTokenResponseClient() {
+    return new LinkedInAccessTokenResponseClient();
   }
   @Bean
     public CorsConfigurationSource corsConfigurationSource() {
