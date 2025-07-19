@@ -49,15 +49,17 @@ public class User {
   // @NotBlank
   @Size(max = 120)
   private String password;
-
-  //@ManyToMany(fetch = FetchType.LAZY)
-  //@JoinTable(name = "user_roles", 
-  //           joinColumns = @JoinColumn(name = "user_id"),
-  //           inverseJoinColumns = @JoinColumn(name = "role_id"))
-  //private Set<Role> roles = new HashSet<>();
-
+ 
+  
   @NotBlank
   private String role;
+
+  // OAuth2 fields for LinkedIn integration
+  private String linkedinId;
+  private String linkedinAccessToken;
+  private String linkedinRefreshToken;
+  private LocalDateTime linkedinTokenExpiry;
+  private String provider; // "local", "linkedin"
 
   @CreationTimestamp
   private LocalDateTime createdAt;
@@ -72,5 +74,19 @@ public class User {
     this.lastName = lastName;
     this.password = password;
     this.role = role;
+    this.provider = "local";
+  }
+
+  // Constructor for OAuth2 users
+  public User(String linkedinId, String username, String email, String firstName, String lastName, String role, 
+              String linkedinAccessToken) {
+    this.linkedinId = linkedinId;
+    this.username = username;
+    this.email = email;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.role = role;
+    this.linkedinAccessToken = linkedinAccessToken;
+    this.provider = "linkedin";
   }
 }

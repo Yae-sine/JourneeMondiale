@@ -14,4 +14,8 @@ public interface  UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsernameAndEmail(String username, String email);
     Boolean existsByUsername(String username);
     Boolean existsByEmail(String email);
+    
+    // LinkedIn OAuth2 methods
+    Optional<User> findByLinkedinId(String linkedinId);
+    Boolean existsByLinkedinId(String linkedinId);
 }

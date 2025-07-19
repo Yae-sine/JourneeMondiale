@@ -98,6 +98,15 @@ public class UserDetailsImpl implements UserDetails {
     return updatedAt;
   }
 
+  public String getRole() {
+    // Extract role from authorities (remove ROLE_ prefix)
+    return authorities.stream()
+        .map(GrantedAuthority::getAuthority)
+        .findFirst()
+        .map(role -> role.startsWith("ROLE_") ? role.substring(5) : role)
+        .orElse("USER");
+  }
+
   @Override
   public String getPassword() {
     return password;

@@ -99,6 +99,18 @@
 			<artifactId>stripe-java</artifactId>
 			<version>24.11.0</version> 
 		</dependency>
+		
+		<!-- OAuth2 Client Support -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
+		
+		<!-- HTTP Client for LinkedIn API calls -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>

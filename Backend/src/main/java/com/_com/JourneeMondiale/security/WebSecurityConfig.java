@@ -20,6 +20,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com._com.JourneeMondiale.security.Jwt.AuthEntryPointJwt;
 import com._com.JourneeMondiale.security.Jwt.AuthTokenFilter;
+import com._com.JourneeMondiale.security.oauth2.CustomOAuth2UserService;
 
 @Configuration
 @EnableMethodSecurity
@@ -29,9 +30,11 @@ public class WebSecurityConfig {
   private String h2ConsolePath;
   
   private final AuthEntryPointJwt unauthorizedHandler;
+  private final CustomOAuth2UserService customOAuth2UserService;
   
-  public WebSecurityConfig(AuthEntryPointJwt unauthorizedHandler) {
+  public WebSecurityConfig(AuthEntryPointJwt unauthorizedHandler, CustomOAuth2UserService customOAuth2UserService) {
     this.unauthorizedHandler = unauthorizedHandler;
+    this.customOAuth2UserService = customOAuth2UserService;
   }
 
   @Bean
@@ -57,10 +60,19 @@ public class WebSecurityConfig {
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> 
           auth.requestMatchers("/api/auth/signin", "/api/auth/signup").permitAll()
+              .requestMatchers("/api/auth/oauth2/**").permitAll()
+              .requestMatchers("/oauth2/**").permitAll()
+              .requestMatchers("/login/oauth2/**").permitAll()
               .requestMatchers("/api/admin/**").hasRole("ADMIN")
               .requestMatchers("/api/subscriptions/webhook").permitAll() // Allow Stripe webhooks
               .requestMatchers(h2ConsolePath + "/**").permitAll()
               .anyRequest().authenticated()
+        )
+        .oauth2Login(oauth2 -> 
+          oauth2
+            .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+            .defaultSuccessUrl("/api/auth/oauth2/success", true)
+            .failureUrl("/api/auth/oauth2/failure")
         );
     // fix H2 database console: Refused to display ' in a frame because it set 'X-Frame-Options' to 'deny'
     http.headers(headers -> headers.frameOptions(frameOption -> frameOption.sameOrigin()));
