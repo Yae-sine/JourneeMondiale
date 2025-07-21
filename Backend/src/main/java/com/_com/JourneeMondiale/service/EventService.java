@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+
+import com._com.JourneeMondiale.dto.EventDTO;
+import com._com.JourneeMondiale.dto.EventRegistrationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,22 +98,22 @@ public class EventService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'ID: " + userId));
 
-
         // Check if event is full
         Long currentRegistrations = eventRegistrationRepository.countConfirmedRegistrationsByEventId(eventId);
         if (currentRegistrations >= event.getMaxParticipants()) {
-            throw new RuntimeException("Cet événement est complet");
+            throw new RuntimeException("L'événement est complet");
         }
-        
+
         // Check if registration deadline has passed
         if (LocalDateTime.now().isAfter(event.getRegistrationDeadline())) {
             throw new RuntimeException("La date limite d'inscription est dépassée");
         }
-        
+
         // Check if event date has passed
         if (LocalDateTime.now().isAfter(event.getEventDate())) {
             throw new RuntimeException("Cet événement est déjà passé");
         }
+
         // Check if user is already registered
         Optional<EventRegistration> existingRegistrationOpt = eventRegistrationRepository.findByUserIdAndEventId(userId, eventId);
         if (existingRegistrationOpt.isPresent()) {
@@ -126,24 +129,22 @@ public class EventService {
                 existingRegistration.setRegistrationDate(LocalDateTime.now());
                 EventRegistration savedRegistration = eventRegistrationRepository.save(existingRegistration);
                 // Update current participants count
-                event.setCurrentParticipants(currentRegistrations.intValue());
+                event.setCurrentParticipants(currentRegistrations.intValue() + 1);
                 eventRepository.save(event);
                 return savedRegistration;
             }
         }
-        
-        
-        
+
         EventRegistration registration = new EventRegistration(event, user, participantName, participantEmail);
         registration.setNotes(notes);
         registration.setStatus(EventRegistration.RegistrationStatus.CONFIRMED);
-        
+
         EventRegistration savedRegistration = eventRegistrationRepository.save(registration);
-        
+
         // Update current participants count
         event.setCurrentParticipants(currentRegistrations.intValue() + 1);
         eventRepository.save(event);
-        
+
         return savedRegistration;
     }
     
@@ -176,5 +177,55 @@ public class EventService {
         Long currentRegistrations = eventRegistrationRepository.countConfirmedRegistrationsByEventId(event.getId());
         event.setCurrentParticipants(currentRegistrations.intValue());
         eventRepository.save(event);
+    }
+
+    public EventRegistrationDTO convertToEventRegistrationDTO(EventRegistration registration) {
+        EventRegistrationDTO dto = new EventRegistrationDTO();
+        dto.setId(registration.getId());
+        dto.setParticipantName(registration.getParticipantName());
+        dto.setParticipantEmail(registration.getParticipantEmail());
+        dto.setNotes(registration.getNotes());
+        dto.setRegistrationDate(registration.getRegistrationDate());
+        dto.setStatus(registration.getStatus().name());
+
+        // Convert event to EventSummaryDTO
+        Event event = registration.getEvent();
+        EventRegistrationDTO.EventSummaryDTO eventDto = new EventRegistrationDTO.EventSummaryDTO();
+        eventDto.setId(event.getId());
+        eventDto.setName(event.getName());
+        eventDto.setDescription(event.getDescription());
+        eventDto.setLocation(event.getLocation());
+        eventDto.setEventDate(event.getEventDate());
+        eventDto.setRegistrationDeadline(event.getRegistrationDeadline());
+        eventDto.setMaxParticipants(event.getMaxParticipants());
+        eventDto.setCurrentParticipants(event.getCurrentParticipants());
+        eventDto.setEventType(event.getEventType());
+
+        dto.setEvent(eventDto);
+        return dto;
+    }
+
+    // Convert Event entity to EventDTO (with optional registrations)
+    public EventDTO convertToEventDTO(Event event, boolean includeRegistrations) {
+        EventDTO dto = new EventDTO();
+        dto.setId(event.getId());
+        dto.setName(event.getName());
+        dto.setDescription(event.getDescription());
+        dto.setLocation(event.getLocation());
+        dto.setEventDate(event.getEventDate());
+        dto.setRegistrationDeadline(event.getRegistrationDeadline());
+        dto.setMaxParticipants(event.getMaxParticipants());
+        dto.setCurrentParticipants(event.getCurrentParticipants());
+        dto.setEventType(event.getEventType());
+        dto.setIsActive(event.getIsActive());
+        dto.setCreatedAt(event.getCreatedAt());
+        dto.setUpdatedAt(event.getUpdatedAt());
+        if (includeRegistrations && event.getRegistrations() != null) {
+            List<EventRegistrationDTO> regDTOs = event.getRegistrations().stream()
+                .map(this::convertToEventRegistrationDTO)
+                .collect(java.util.stream.Collectors.toList());
+            dto.setRegistrations(regDTOs);
+        }
+        return dto;
     }
 }

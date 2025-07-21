@@ -28,7 +28,7 @@ public class EventRegistration {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
-    @JsonBackReference
+    // @JsonBackReference
     private Event event;
 
     @ManyToOne(fetch = FetchType.LAZY)

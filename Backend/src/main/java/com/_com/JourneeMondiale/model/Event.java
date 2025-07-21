@@ -63,7 +63,7 @@ public class Event {
     private LocalDateTime updatedAt;
     
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    // @JsonManagedReference
     private Set<EventRegistration> registrations = new HashSet<>();
 
     public Event() {

@@ -271,7 +271,7 @@ const AdminEvents = () => {
                             <div className="flex items-center">
                               <FaUsers className="mr-2 text-[#00ACA8]" />
                               <span className="text-sm text-gray-900">
-                               {event.registrations?.filter(reg => reg.status === "CONFIRMED").length} / {event.maxParticipants}
+                               {event.currentParticipants || 0 } / {event.maxParticipants}
                               </span>
                             </div>
                           </td>

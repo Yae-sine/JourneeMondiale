@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com._com.JourneeMondiale.dto.EventRegistrationDTO;
+import com._com.JourneeMondiale.dto.EventDTO;
 import com._com.JourneeMondiale.model.Event;
 import com._com.JourneeMondiale.model.EventRegistration;
 import com._com.JourneeMondiale.payload.request.EventRegistrationRequest;
@@ -37,21 +38,25 @@ public class EventController {
     private EventService eventService;
     
     @GetMapping("/")
-    public ResponseEntity<List<Event>> getAllEvents() {
-        List<Event> events = eventService.getUpcomingEvents();
-        return ResponseEntity.ok(events);
+    public ResponseEntity<List<EventDTO>> getAllEvents() {
+        List<EventDTO> eventDTOs = eventService.getUpcomingEvents().stream()
+            .map(event -> eventService.convertToEventDTO(event, true))
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(eventDTOs);
     }
-    
+
     @GetMapping("/upcoming")
-    public ResponseEntity<List<Event>> getUpcomingOpenEvents() {
-        List<Event> events = eventService.getUpcomingOpenEvents();
-        return ResponseEntity.ok(events);
+    public ResponseEntity<List<EventDTO>> getUpcomingOpenEvents() {
+        List<EventDTO> eventDTOs = eventService.getUpcomingOpenEvents().stream()
+            .map(event -> eventService.convertToEventDTO(event, true))
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(eventDTOs);
     }
-    
+
     @GetMapping("/{id}")
-    public ResponseEntity<Event> getEventById(@PathVariable Long id) {
+    public ResponseEntity<EventDTO> getEventById(@PathVariable Long id) {
         return eventService.getEventById(id)
-                .map(event -> ResponseEntity.ok(event))
+                .map(event -> ResponseEntity.ok(eventService.convertToEventDTO(event, true)))
                 .orElse(ResponseEntity.notFound().build());
     }
     
@@ -88,11 +93,10 @@ public class EventController {
     public ResponseEntity<List<EventRegistrationDTO>> getMyRegistrations(Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         Long userId = userDetails.getId();
-        
         List<EventRegistration> registrations = eventService.getUpcomingUserRegistrations(userId);
-        
-        List<EventRegistrationDTO> registrationDTOs = registrations.stream().map(this::convertToDTO).collect(Collectors.toList());
-        
+        List<EventRegistrationDTO> registrationDTOs = registrations.stream()
+            .map(eventService::convertToEventRegistrationDTO)
+            .collect(Collectors.toList());
         return ResponseEntity.ok(registrationDTOs);
     }
     
@@ -120,17 +124,19 @@ public class EventController {
     // Admin endpoints
     @PostMapping("/")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Event> createEvent(@RequestBody @Valid Event event) {
+    public ResponseEntity<EventDTO> createEvent(@RequestBody @Valid Event event) {
         Event createdEvent = eventService.createEvent(event);
-        return ResponseEntity.ok(createdEvent);
+        EventDTO eventDTO = eventService.convertToEventDTO(createdEvent, false);
+        return ResponseEntity.ok(eventDTO);
     }
-    
+
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Event> updateEvent(@PathVariable Long id, @RequestBody @Valid Event eventDetails) {
+    public ResponseEntity<EventDTO> updateEvent(@PathVariable Long id, @RequestBody @Valid Event eventDetails) {
         try {
             Event updatedEvent = eventService.updateEvent(id, eventDetails);
-            return ResponseEntity.ok(updatedEvent);
+            EventDTO eventDTO = eventService.convertToEventDTO(updatedEvent, false);
+            return ResponseEntity.ok(eventDTO);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
@@ -155,35 +161,10 @@ public class EventController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<EventRegistrationDTO>> getEventRegistrations(@PathVariable Long eventId) {
         List<EventRegistration> registrations = eventService.getEventRegistrations(eventId);
-        List<EventRegistrationDTO> registrationDTOs = registrations.stream().map(this::convertToDTO).collect(Collectors.toList());
+        List<EventRegistrationDTO> registrationDTOs = registrations.stream()
+            .map(eventService::convertToEventRegistrationDTO)
+            .collect(Collectors.toList());
         return ResponseEntity.ok(registrationDTOs);
     }
     
-    // Helper method to convert EventRegistration entity to DTO
-    private EventRegistrationDTO convertToDTO(EventRegistration registration) {
-        EventRegistrationDTO dto = new EventRegistrationDTO();
-        dto.setId(registration.getId());
-        dto.setParticipantName(registration.getParticipantName());
-        dto.setParticipantEmail(registration.getParticipantEmail());
-        dto.setNotes(registration.getNotes());
-        dto.setRegistrationDate(registration.getRegistrationDate());
-        dto.setStatus(registration.getStatus().name());
-        
-        // Convert event to EventSummaryDTO
-        Event event = registration.getEvent();
-        EventRegistrationDTO.EventSummaryDTO eventDto = new EventRegistrationDTO.EventSummaryDTO();
-        eventDto.setId(event.getId());
-        eventDto.setName(event.getName());
-        eventDto.setDescription(event.getDescription());
-        eventDto.setLocation(event.getLocation());
-        eventDto.setEventDate(event.getEventDate());
-        eventDto.setRegistrationDeadline(event.getRegistrationDeadline());
-        eventDto.setMaxParticipants(event.getMaxParticipants());
-        eventDto.setCurrentParticipants(event.getCurrentParticipants());
-        eventDto.setEventType(event.getEventType());
-        
-        dto.setEvent(eventDto);
-        
-        return dto;
-    }
 }
