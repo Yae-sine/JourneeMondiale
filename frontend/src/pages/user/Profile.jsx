@@ -58,6 +58,9 @@ const Profile = () => {
       const updatedUser = await userService.updateCurrentUserProfile(editForm);
       setUser(updatedUser);
       setSuccessMessage('Profil mis à jour avec succès!');
+      setTimeout(() => {
+        setSuccessMessage('');
+      }, 3000);
       setActiveTab('view');
     } catch (err) {
       setError(err.message || 'Erreur lors de la mise à jour du profil.');
@@ -87,6 +90,9 @@ const Profile = () => {
     try {
       await userService.changePassword(passwordForm.oldPassword, passwordForm.newPassword);
       setSuccessMessage('Mot de passe modifié avec succès!');
+      setTimeout(() => {
+        setSuccessMessage('');
+      }, 3000);
       setPasswordForm({ oldPassword: '', newPassword: '', confirmPassword: '' });
       setActiveTab('view');
     } catch (err) {

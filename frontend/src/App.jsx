@@ -7,6 +7,7 @@ import DonationPage from './pages/user/DonationPage';
 import UserDonations from './pages/user/UserDonations';
 import SubscriptionPage from './pages/user/SubscriptionPage';
 import UserSubscription from './pages/user/UserSubscription';
+import UserEvents from './pages/user/UserEvents';
 import Unauthorized from './pages/Unauthorized';
 import AdminPage from './pages/admin/Dashboard';
 import UsersPage from './pages/admin/UsersPage';
@@ -14,6 +15,7 @@ import EditUserForm from './pages/admin/EditUserForm';
 import AddUserForm from './pages/admin/AddUserForm';
 import AdminDonationsPage from './pages/admin/AdminDonationsPage';
 import AdminSubscriptionsPage from './pages/admin/AdminSubscriptionsPage';
+import AdminEvents from './pages/admin/AdminEvents';
 import AdminRoute from './components/admin/AdminRoute';
 import Profile from './pages/user/Profile';
 import withAuth from './components/auth/withAuth';
@@ -24,6 +26,7 @@ function App() {
 
   const AuthUserDonations = withAuth(UserDonations);
   const AuthUserSubscription = withAuth(UserSubscription);
+  const AuthUserEvents = withAuth(UserEvents);
   // const AuthPostsPage = withAuth(() => <div>Mes Publications</div>);
 
   return (
@@ -41,6 +44,7 @@ function App() {
           <Route path="/account/profile" element={<AuthProfile />} />
           <Route path="/account/donations" element={<AuthUserDonations />} />
           <Route path="/account/subscription" element={<AuthUserSubscription />} />
+          <Route path="/account/events" element={<AuthUserEvents />} />
           {/* <Route path="/account/posts" element={<AuthPostsPage />} /> */}
           
 
@@ -80,6 +84,12 @@ function App() {
           <Route path="/admin/subscriptions" element={
             <AdminRoute>
               <AdminSubscriptionsPage />
+            </AdminRoute>
+          } />
+
+          <Route path="/admin/events" element={
+            <AdminRoute>
+              <AdminEvents />
             </AdminRoute>
           } />
           {/* <Route path="/admin/posts" element={

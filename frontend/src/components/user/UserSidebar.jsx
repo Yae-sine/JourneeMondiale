@@ -5,7 +5,7 @@ import {
   FaUser,
   FaHandHoldingHeart,
   FaRegCreditCard,
-  FaShareAlt,
+  FaCalendarAlt,
   FaBars,
   FaTimes
 } from 'react-icons/fa';
@@ -34,10 +34,10 @@ const UserSidebar = () => {
       path: '/account/subscription'
     },
     {
-      id: 'posts',
-      title: 'Mes Publications',
-      icon: <FaShareAlt size={20} />,
-      path: '/account/posts'
+      id: 'events',
+      title: 'Mes Événements',
+      icon: <FaCalendarAlt size={20} />,
+      path: '/account/events'
     }
   ];
 

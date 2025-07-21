@@ -4,7 +4,7 @@ import { authService } from '../../services/authService';
 import { 
   FaUsers, 
   FaHandHoldingHeart, 
-  FaShareAlt, 
+  FaCalendarAlt, 
   FaTachometerAlt,
   FaBars,
   FaTimes,
@@ -41,10 +41,10 @@ const AdminSidebar = () => {
       path: '/admin/subscriptions'
     },
     {
-      id: 'posts',
-      title: 'Publications',
-      icon: <FaShareAlt size={20} />,
-      path: '/admin/posts'
+      id: 'events',
+      title: 'Événements',
+      icon: <FaCalendarAlt size={20} />,
+      path: '/admin/events'
     }
   ];
 

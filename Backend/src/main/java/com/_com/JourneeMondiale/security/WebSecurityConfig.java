@@ -59,6 +59,7 @@ public class WebSecurityConfig {
           auth.requestMatchers("/api/auth/signin", "/api/auth/signup").permitAll()
               .requestMatchers("/api/admin/**").hasRole("ADMIN")
               .requestMatchers("/api/subscriptions/webhook").permitAll() // Allow Stripe webhooks
+              .requestMatchers("/api/events", "/api/events/upcoming", "/api/events/{id}").permitAll() // Allow viewing events
               .requestMatchers(h2ConsolePath + "/**").permitAll()
               .anyRequest().authenticated()
         );
