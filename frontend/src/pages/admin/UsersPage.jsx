@@ -6,6 +6,7 @@ import ConfirmationModal from '../../components/admin/ConfirmationModal';
 import { userService } from '../../services/userService';
 
 const UsersPage = () => {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const [users, setUsers] = useState([]);
@@ -118,11 +119,8 @@ const UsersPage = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <AdminSidebar />
-      
-      {/* Main Content */}
-      <div className="flex-1 p-8">
+      <AdminSidebar isCollapsed={isSidebarCollapsed} setIsCollapsed={setIsSidebarCollapsed} />
+      <div className={`flex-1 p-8 transition-all duration-300 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
         {/* Header */}
         <div className="mb-8">
           {/* Success Message */}

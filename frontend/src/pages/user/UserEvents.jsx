@@ -5,6 +5,7 @@ import { eventService } from '../../services/eventService';
 import { userService } from '../../services/userService';
 
 const UserEvents = () => {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [myRegistrations, setMyRegistrations] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -162,8 +163,8 @@ const UserEvents = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <UserSidebar />
-      <div className="flex-1 p-8">
+      <UserSidebar isCollapsed={isSidebarCollapsed} setIsCollapsed={setIsSidebarCollapsed} />
+      <div className={`flex-1 p-8 transition-all duration-300 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
         <div className="mx-auto">
           {/* Header */}
           <div className="bg-white mb-8">

@@ -5,6 +5,7 @@ import AdminSidebar from '../../components/admin/sidebar';
 import { userService } from '../../services/userService';
 
 const EditUserForm = () => {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -105,8 +106,8 @@ const EditUserForm = () => {
   if (loading) {
     return (
       <div className="flex min-h-screen bg-gray-50">
-        <AdminSidebar />
-        <div className="flex-1 p-8 flex items-center justify-center">
+        <AdminSidebar isCollapsed={isSidebarCollapsed} setIsCollapsed={setIsSidebarCollapsed} />
+        <div className={`flex-1 p-8 transition-all duration-300 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" 
                  style={{ borderColor: '#00ACA8' }}>

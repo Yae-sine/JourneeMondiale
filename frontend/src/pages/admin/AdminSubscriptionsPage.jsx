@@ -4,6 +4,7 @@ import AdminSidebar from '../../components/admin/sidebar';
 import { subscriptionService } from '../../services/subscriptionService';
 
 const AdminSubscriptionsPage = () => {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [subscriptions, setSubscriptions] = useState([]);
   const [statistics, setStatistics] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -83,9 +84,8 @@ const AdminSubscriptionsPage = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <AdminSidebar />
-      
-      <div className="flex-1 p-8">
+      <AdminSidebar isCollapsed={isSidebarCollapsed} setIsCollapsed={setIsSidebarCollapsed} />
+      <div className={`flex-1 p-8 transition-all duration-300 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>

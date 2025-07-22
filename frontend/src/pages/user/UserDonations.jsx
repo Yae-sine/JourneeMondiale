@@ -5,6 +5,7 @@ import { donationService } from '../../services/donationService';
 import { FaHandHoldingHeart, FaPlus, FaCalendarAlt, FaEuroSign, FaCheckCircle, FaClock, FaTimesCircle, FaChartLine } from 'react-icons/fa';
 
 const UserDonations = () => {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [donations, setDonations] = useState([]);
   const [statistics, setStatistics] = useState({});
   const [loading, setLoading] = useState(true);
@@ -76,8 +77,8 @@ const UserDonations = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <UserSidebar />
-      <div className="flex-1 p-8">
+      <UserSidebar isCollapsed={isSidebarCollapsed} setIsCollapsed={setIsSidebarCollapsed} />
+      <div className={`flex-1 p-8 transition-all duration-300 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
         <div className="mx-auto">
           {/* Header */}
           <div className="bg-white mb-8">

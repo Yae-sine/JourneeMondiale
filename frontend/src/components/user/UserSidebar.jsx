@@ -10,8 +10,7 @@ import {
   FaTimes
 } from 'react-icons/fa';
 
-const UserSidebar = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+const UserSidebar = ({ isCollapsed, setIsCollapsed }) => {
   const location = useLocation();
 
   const menuItems = [
@@ -51,7 +50,7 @@ const UserSidebar = () => {
   return (
     <div className={`bg-white shadow-lg transition-all duration-300 ${
       isCollapsed ? 'w-16' : 'w-64'
-    } min-h-screen relative`}>
+    } h-screen left-0 top-0 fixed z-40`}>
       {/* Header */}
       <div className="p-4 border-b border-gray-200 flex items-center justify-between">
         {!isCollapsed && (

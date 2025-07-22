@@ -11,8 +11,7 @@ import {
   FaRegCreditCard
 } from 'react-icons/fa';
 
-const AdminSidebar = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+const AdminSidebar = ({ isCollapsed, setIsCollapsed }) => {
   const location = useLocation();
 
   const menuItems = [
@@ -59,7 +58,7 @@ const AdminSidebar = () => {
   return (
     <div className={`bg-white shadow-lg transition-all duration-300 ${
       isCollapsed ? 'w-16' : 'w-64'
-    } min-h-screen relative`}>
+    } h-screen fixed top-0 left-0 z-40`}>
       
       {/* Header */}
       <div className="p-4 border-b border-gray-200 flex items-center justify-between">

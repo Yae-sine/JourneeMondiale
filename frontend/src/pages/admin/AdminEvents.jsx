@@ -4,6 +4,7 @@ import AdminSidebar from '../../components/admin/sidebar';
 import { eventService } from '../../services/eventService';
 
 const AdminEvents = () => {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -172,8 +173,8 @@ const AdminEvents = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <AdminSidebar />
-      <div className="flex-1 p-8">
+      <AdminSidebar isCollapsed={isSidebarCollapsed} setIsCollapsed={setIsSidebarCollapsed} />
+      <div className={`flex-1 p-8 transition-all duration-300 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
         <div className="mx-auto">
           {/* Header */}
           <div className="flex justify-between items-center mb-8">

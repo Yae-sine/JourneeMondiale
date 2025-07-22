@@ -5,21 +5,19 @@ import AdminSidebar from '../../components/admin/sidebar';
 import { donationService } from '../../services/donationService';
 
 const AdminDonationsPage = () => {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [donations, setDonations] = useState([]);
   const [donationStats, setDonationStats] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('all'); // 'all'  'stats'
-  
   // Chart data states
   const [donationsOverTime, setDonationsOverTime] = useState([]);
   // const [topDonors, setTopDonors] = useState([]); // Removed: Top Donors chart not needed
   const [monthlyTotals, setMonthlyTotals] = useState([]);
-  
   // Chart customization states
   const [timePeriod, setTimePeriod] = useState('month'); // 'month', 'year' (week removed)
   const [chartType, setChartType] = useState('area'); // 'area', 'line', 'bar'
-  
   // Pagination and filtering states
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -27,7 +25,6 @@ const AdminDonationsPage = () => {
   const [sortBy, setSortBy] = useState('createdAt');
   const [sortDir, setSortDir] = useState('desc');
   const pageSize = 10; 
-  
   // Filter states
   const [filters, setFilters] = useState({
     status: '',
@@ -508,9 +505,8 @@ const AdminDonationsPage = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <AdminSidebar />
-      
-      <div className="flex-1 p-8">
+      <AdminSidebar isCollapsed={isSidebarCollapsed} setIsCollapsed={setIsSidebarCollapsed} />
+      <div className={`flex-1 p-8 transition-all duration-300 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">

@@ -18,6 +18,7 @@ import {
 } from 'react-icons/fa';
 
 const UserSubscription = () => {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -117,8 +118,8 @@ const UserSubscription = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <UserSidebar />
-      <div className="flex-1 p-8">
+      <UserSidebar isCollapsed={isSidebarCollapsed} setIsCollapsed={setIsSidebarCollapsed} />
+      <div className={`flex-1 p-8 transition-all duration-300 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
         <div className="mx-auto">
           {/* Header */}
           <div className="bg-white mb-8">

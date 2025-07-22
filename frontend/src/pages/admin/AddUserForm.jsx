@@ -5,6 +5,7 @@ import AdminSidebar from '../../components/admin/sidebar';
 import { userService } from '../../services/userService';
 
 const AddUserForm = () => {
+  const [isSidebarCollapsed,setIsSidebarCollapsed]=useState(false);
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -91,7 +92,7 @@ const AddUserForm = () => {
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <AdminSidebar />
+      <AdminSidebar isCollapsed={isSidebarCollapsed} setIsCollapsed={setIsSidebarCollapsed} />
       
       {/* Main Content */}
       <div className="flex-1 p-8 flex flex-col items-center">
