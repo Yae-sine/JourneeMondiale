@@ -117,7 +117,6 @@ const DonationPageContent = () => {
       } else if (paymentIntent.status === 'succeeded') {
         setMessage('Merci pour votre don ! Votre paiement a été traité avec succès.');
         
-        // Optional: Notify backend of successful payment
         await axios.post(
           `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080'}/api/payment/confirm`,
           {

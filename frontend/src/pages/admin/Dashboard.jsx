@@ -289,7 +289,7 @@ const AdminDashboard = () => {
             title="Total Dons"
             value={`${stats.donationAmount}€`}
             icon={<FaHandHoldingHeart size={24} />}
-            color="#FF6B6B"
+            color="#00ac9a"
             subtitle={`${stats.totalDonations} transactions`}
             trend={12.5}
           />

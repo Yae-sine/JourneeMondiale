@@ -139,10 +139,10 @@ const UserDonations = () => {
               <div className="bg-white rounded-lg shadow-md p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">En attente</p>
-                    <p className="text-2xl font-bold text-yellow-600">{statistics.pendingCount || 0}</p>
+                    <p className="text-sm font-medium text-gray-600">Dons échouées</p>
+                    <p className="text-2xl font-bold text-red-600">{statistics.failedCount || 0}</p>
                   </div>
-                  <FaClock className="text-3xl text-yellow-500" />
+                  <FaTimesCircle className="text-3xl text-red-500" />
                 </div>
               </div>
             </div>

@@ -62,6 +62,7 @@ public class StripeService {
         response.put("clientSecret", paymentIntent.getClientSecret());
         response.put("paymentIntentId", paymentIntent.getId());
 
+        saveFailedDonation(paymentIntent);
         return response;
     }
 
@@ -77,23 +78,26 @@ public class StripeService {
         PaymentIntent paymentIntent = PaymentIntent.retrieve(request.getPaymentIntentId());
 
         Map<String, Object> response = new HashMap<>();
-        
+
         if ("succeeded".equals(paymentIntent.getStatus())) {
             // Payment successful - save to database
             saveDonation(paymentIntent);
-            
+
             response.put("status", "success");
             response.put("message", "Payment processed successfully");
             response.put("paymentIntentId", paymentIntent.getId());
             response.put("amount", paymentIntent.getAmount());
             response.put("currency", paymentIntent.getCurrency());
-            
+
             return response;
         } else {
+            // Save failed donation to database
+            saveFailedDonation(paymentIntent);
+
             response.put("status", "failed");
             response.put("message", "Payment not completed");
             response.put("paymentStatus", paymentIntent.getStatus());
-            
+
             return response;
         }
     }
@@ -107,12 +111,60 @@ public class StripeService {
         try {
             // Convert amount from cents to decimal
             BigDecimal amount = new BigDecimal(paymentIntent.getAmount()).divide(new BigDecimal(100));
-            
+
             // Get customer info from metadata
             String customerName = paymentIntent.getMetadata().get("customerName");
             String customerEmail = paymentIntent.getMetadata().get("customerEmail");
-            
-            // Create and save donation record
+
+            // Check if a donation with the same paymentIntent ID exists
+            // Convert paymentIntent ID to Long if possible, otherwise handle appropriately
+            String paymentIntentId = paymentIntent.getId();
+            Donation existingDonation = (paymentIntentId != null) ? donationRepository.findByPaymentIntentId(paymentIntentId).orElse(null) : null;
+            if (existingDonation != null) {
+                // Update status to succeeded and update other fields if needed
+                existingDonation.setStatus("succeeded");
+                existingDonation.setAmount(amount);
+                existingDonation.setCurrency(paymentIntent.getCurrency().toUpperCase());
+                existingDonation.setDonorName(customerName);
+                existingDonation.setDonorEmail(customerEmail);
+                existingDonation.setDescription(paymentIntent.getDescription());
+                donationRepository.save(existingDonation);
+            } else {
+                // Create and save donation record
+                Donation donation = new Donation(
+                    paymentIntent.getId(),
+                    amount,
+                    paymentIntent.getCurrency().toUpperCase(),
+                    customerName,
+                    customerEmail,
+                    paymentIntent.getDescription(),
+                    "succeeded"
+                );
+                donationRepository.save(donation);
+                System.out.println("Donation saved: " + donation.getId() +
+                    " - " + customerName + " donated " + amount + " " + paymentIntent.getCurrency());
+            }
+        } catch (Exception e) {
+            System.err.println("Error saving donation: " + e.getMessage());
+            // Log error but don't throw exception to avoid failing the payment confirmation
+        }
+    }
+
+    /**
+     * Saves failed donation to database
+     *
+     * @param paymentIntent Stripe PaymentIntent object containing payment details
+     */
+    private void saveFailedDonation(PaymentIntent paymentIntent) {
+        try {
+            // Convert amount from cents to decimal
+            BigDecimal amount = new BigDecimal(paymentIntent.getAmount()).divide(new BigDecimal(100));
+
+            // Get customer info from metadata
+            String customerName = paymentIntent.getMetadata().get("customerName");
+            String customerEmail = paymentIntent.getMetadata().get("customerEmail");
+
+            // Create and save donation record with status 'failed'
             Donation donation = new Donation(
                 paymentIntent.getId(),
                 amount,
@@ -120,16 +172,16 @@ public class StripeService {
                 customerName,
                 customerEmail,
                 paymentIntent.getDescription(),
-                "succeeded"
+                "failed"
             );
-            
+
             donationRepository.save(donation);
-            
-            System.out.println("Donation saved: " + donation.getId() + 
-                " - " + customerName + " donated " + amount + " " + paymentIntent.getCurrency());
-            
+
+            System.out.println("Failed donation saved: " + donation.getId() +
+                " - " + customerName + " attempted to donate " + amount + " " + paymentIntent.getCurrency());
+
         } catch (Exception e) {
-            System.err.println("Error saving donation: " + e.getMessage());
+            System.err.println("Error saving failed donation: " + e.getMessage());
             // Log error but don't throw exception to avoid failing the payment confirmation
         }
     }
