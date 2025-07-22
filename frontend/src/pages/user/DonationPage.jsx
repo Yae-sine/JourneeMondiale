@@ -153,12 +153,21 @@ const DonationPageContent = () => {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-                <FaHeart className="mr-3" style={{ color: '#00ACA8' }} />
-                Faire un don ponctuel
-              </h1>
-              <p className="text-gray-600 mt-1">Soutenez la recherche contre le cancer chez les jeunes adultes</p>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => navigate(-1)}
+                  className="p-2 rounded-full hover:bg-gray-200 transition-colors"
+                  aria-label="Retour"
+                >
+                  <svg className="w-6 h-6 text-[#00ACA8]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                </button>
+                <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+                  <FaHeart className="mr-3" style={{ color: '#00ACA8' }} />
+                  Faire un don ponctuel
+                </h1>
+              </div>
+              <p className="text-gray-600 mt-1 ml-14">Soutenez la recherche contre le cancer chez les jeunes adultes</p>
             </div>
           </div>
         </div>
