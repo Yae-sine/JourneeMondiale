@@ -6,10 +6,10 @@ import {
   useStripe,
   useElements
 } from '@stripe/react-stripe-js';
-import { FaHeart, FaSpinner, FaArrowLeft, FaUser, FaEnvelope } from 'react-icons/fa';
+import { FaHeart, FaSpinner, FaUser, FaEnvelope } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
-import Footer from '../../components/home/Footer';
+import UserSidebar from '../../components/user/UserSidebar';
 import axios from 'axios';
 
 // Initialize Stripe
@@ -40,6 +40,7 @@ const DonationPageContent = () => {
   const navigate = useNavigate();
   const { user } = useUser();
   
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [amount, setAmount] = useState('50');
   const [customAmount, setCustomAmount] = useState('');
   const [processing, setProcessing] = useState(false);
@@ -146,27 +147,24 @@ const DonationPageContent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] to-[#e0f7fa] flex flex-col">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-[#00ACA8] to-[#007c7a] text-white py-10 shadow-md">
-        <div className="max-w-4xl mx-auto px-6 flex flex-col gap-2">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center text-white hover:text-gray-200 mb-4 transition-colors"
-          >
-            <FaArrowLeft className="mr-2" />
-            Retour à la page précédente
-          </button>
-          <h1 className="text-4xl font-extrabold tracking-tight mb-1">Faire un don ponctuel</h1>
-          <p className="text-lg opacity-90 font-medium">
-            Soutenez la recherche contre le cancer chez les jeunes adultes
-          </p>
+    <div className="flex min-h-screen bg-gray-50">
+      <UserSidebar isCollapsed={isSidebarCollapsed} setIsCollapsed={setIsSidebarCollapsed} />
+      <div className={`flex-1 p-8 transition-all duration-300 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+                <FaHeart className="mr-3" style={{ color: '#00ACA8' }} />
+                Faire un don ponctuel
+              </h1>
+              <p className="text-gray-600 mt-1">Soutenez la recherche contre le cancer chez les jeunes adultes</p>
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="flex-grow max-w-5xl mx-auto px-4 py-12 w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Information */}
           <div className="flex flex-col gap-6">
             <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
@@ -205,7 +203,7 @@ const DonationPageContent = () => {
           </div>
 
           {/* Right Column - Donation Form */}
-          <div className="bg-white border border-gray-100 rounded-2xl p-10 shadow-xl flex flex-col">
+          <div className="bg-white border border-gray-100 rounded-2xl p-10 shadow-xl flex flex-col max-w-2xl mx-auto">
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Amount Selection */}
               <div>
@@ -303,9 +301,6 @@ const DonationPageContent = () => {
           </div>
         </div>
       </div>
-      
-      {/* Footer */}
-      <Footer />
     </div>
   );
 };

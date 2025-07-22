@@ -27,7 +27,6 @@ function App() {
   const AuthUserDonations = withAuth(UserDonations);
   const AuthUserSubscription = withAuth(UserSubscription);
   const AuthUserEvents = withAuth(UserEvents);
-  // const AuthPostsPage = withAuth(() => <div>Mes Publications</div>);
 
   return (
 
@@ -38,14 +37,13 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/donation" element={<AuthDonationPage />} />
-          <Route path="/subscription" element={<AuthSubscriptionPage />} />
           <Route path="/account" element={<Navigate to="/account/profile" replace />} />
           <Route path="/account/profile" element={<AuthProfile />} />
           <Route path="/account/donations" element={<AuthUserDonations />} />
+          <Route path="/account/donations/new" element={<AuthDonationPage />} />
           <Route path="/account/subscription" element={<AuthUserSubscription />} />
+          <Route path="/account/subscription/new" element={<AuthSubscriptionPage />} />
           <Route path="/account/events" element={<AuthUserEvents />} />
-          {/* <Route path="/account/posts" element={<AuthPostsPage />} /> */}
           
 
 
@@ -92,12 +90,6 @@ function App() {
               <AdminEvents />
             </AdminRoute>
           } />
-          {/* <Route path="/admin/posts" element={
-            <AdminRoute>
-              <AdminPostsPage />
-            </AdminRoute>
-          } /> */}
-          
           
         </Routes>
       </BrowserRouter>

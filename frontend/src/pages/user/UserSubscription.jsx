@@ -105,15 +105,15 @@ const UserSubscription = () => {
   };
 
   const handleSubscribe = () => {
-    navigate('/subscription');
+    navigate('/account/subscription/new');
   };
 
   const handleUpdatePlan = () => {
-    navigate('/subscription');
+    navigate('/account/subscription/new');
   };
 
   const handleCancelPlan = () => {
-    navigate('/subscription');
+    navigate('/account/subscription/new');
   };
 
   return (

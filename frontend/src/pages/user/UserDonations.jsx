@@ -91,7 +91,7 @@ const UserDonations = () => {
                 <p className="text-gray-600">Suivez l'historique de vos contributions</p>
               </div>
               <button
-                onClick={() => navigate('/donation')}
+                onClick={() => navigate('/account/donations/new')}
                 className="px-6 py-3 text-white rounded-lg font-medium transition-colors hover:opacity-90 flex items-center"
                 style={{ backgroundColor: '#00ACA8' }}
               >
@@ -175,7 +175,7 @@ const UserDonations = () => {
                     Vous n'avez pas encore fait de don. Commencez dès maintenant !
                   </p>
                   <button
-                    onClick={() => navigate('/donation')}
+                    onClick={() => navigate('/account/donations/new')}
                     className="px-6 py-3 text-white rounded-lg font-medium transition-colors hover:opacity-90"
                     style={{ backgroundColor: '#00ACA8' }}
                   >

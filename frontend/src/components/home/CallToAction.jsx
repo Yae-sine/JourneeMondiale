@@ -5,11 +5,11 @@ function CallToAction() {
     const navigate = useNavigate();
 
     const handleDonationClick = () => {
-        navigate('/donation');
+        navigate('/account/donation');
     };
 
     const handleSubscriptionClick = () => {
-        navigate('/subscription');
+        navigate('/account/subscription');
     };
 
     return (

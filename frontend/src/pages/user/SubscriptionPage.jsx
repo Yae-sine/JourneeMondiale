@@ -6,10 +6,10 @@ import {
   useStripe,
   useElements
 } from '@stripe/react-stripe-js';
-import { FaCrown, FaSpinner, FaArrowLeft, FaExclamationTriangle, FaUser, FaEnvelope, FaHeart } from 'react-icons/fa';
+import { FaCrown, FaSpinner, FaExclamationTriangle, FaUser, FaEnvelope, FaHeart } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
-import Footer from '../../components/home/Footer';
+import UserSidebar from '../../components/user/UserSidebar';
 import axios from 'axios';
 
 // Initialize Stripe
@@ -62,6 +62,7 @@ const SubscriptionPageContent = () => {
   const navigate = useNavigate();
   const { user } = useUser();
   
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [currentSubscription, setCurrentSubscription] = useState(null);
   const [loadingSubscription, setLoadingSubscription] = useState(true);
   const [processing, setProcessing] = useState(false);
@@ -232,42 +233,37 @@ const SubscriptionPageContent = () => {
 
   if (loadingSubscription) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <FaSpinner className="animate-spin mx-auto mb-4 text-3xl text-[#00ACA8]" />
-          <p className="text-gray-600">Chargement de vos informations d'abonnement...</p>
+      <div className="flex min-h-screen bg-gray-50">
+        <UserSidebar isCollapsed={isSidebarCollapsed} setIsCollapsed={setIsSidebarCollapsed} />
+        <div className={`flex-1 transition-all duration-300 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'} flex items-center justify-center`}>
+          <div className="text-center">
+            <FaSpinner className="animate-spin mx-auto mb-4 text-3xl text-[#00ACA8]" />
+            <p className="text-gray-600">Chargement de vos informations d'abonnement...</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      {/* Header */}
-      <div className="bg-[#00ACA8] text-white py-8">
-        <div className="max-w-5xl mx-auto px-6">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center text-white hover:text-gray-200 mb-4 transition-colors"
-          >
-            <FaArrowLeft className="mr-2" />
-            Retour à la page précédente
-          </button>
-          <div className="flex items-center">
-            <FaCrown className="mr-3 text-2xl" />
-            <h1 className="text-3xl font-bold">
-              {currentSubscription ? 'Gérer votre abonnement' : 'Choisir un plan d\'abonnement'}
-            </h1>
+    <div className="flex min-h-screen bg-gray-50">
+      <UserSidebar isCollapsed={isSidebarCollapsed} setIsCollapsed={setIsSidebarCollapsed} />
+      <div className={`flex-1 p-8 transition-all duration-300 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+                <FaCrown className="mr-3" style={{ color: '#00ACA8' }} />
+                {currentSubscription ? 'Gérer votre abonnement' : 'Choisir un plan d\'abonnement'}
+              </h1>
+              <p className="text-gray-600 mt-1">Soutenez régulièrement la recherche contre le cancer chez les jeunes adultes</p>
+            </div>
           </div>
-          <p className="mt-2 text-lg opacity-90">
-            Soutenez régulièrement la recherche contre le cancer chez les jeunes adultes
-          </p>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="flex-grow max-w-5xl mx-auto px-4 py-12 w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Information */}
           <div className="flex flex-col gap-6">
             <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
@@ -336,7 +332,7 @@ const SubscriptionPageContent = () => {
           </div>
 
           {/* Right Column - Subscription Form */}
-          <div className="bg-white border border-gray-100 rounded-2xl p-10 shadow-xl flex flex-col">
+          <div className="bg-white border border-gray-100 rounded-2xl p-10 shadow-xl flex flex-col max-w-2xl mx-auto">
             <form className="space-y-8">
               {/* Plan Selection */}
               <div>
@@ -510,7 +506,7 @@ const SubscriptionPageContent = () => {
               </div>
 
               {/* Security Notice */}
-              {!currentSubscription && (
+              {
                 <div className="text-xs text-gray-500 text-center space-y-1 mt-2">
                   <p className="flex items-center justify-center gap-1">
                     <svg className="w-4 h-4 text-[#00ACA8]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v.01"/><rect width="20" height="12" x="2" y="7" rx="2"/><path d="M17 9V7a5 5 0 0 0-10 0v2"/></svg>
@@ -523,14 +519,11 @@ const SubscriptionPageContent = () => {
                     <span className="text-gray-400">Powered by Stripe</span>
                   </div>
                 </div>
-              )}
+              }
             </form>
           </div>
         </div>
       </div>
-      
-      {/* Footer */}
-      <Footer />
     </div>
   );
 };
