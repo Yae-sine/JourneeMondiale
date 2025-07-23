@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ExclamationTriangleIcon, ShieldExclamationIcon } from '@heroicons/react/24/outline';
 import Footer from '../components/home/Footer';
+import Header from '../components/home/Header';
 
 function Unauthorized() {
     const navigate = useNavigate();
@@ -12,6 +13,7 @@ function Unauthorized() {
 
     return (
         <div className="min-h-screen bg-white flex flex-col">
+            <Header />
             <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
                 <div className="max-w-md w-full space-y-8 text-center">
                     {/* Icon */}
