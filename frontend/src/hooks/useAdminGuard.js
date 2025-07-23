@@ -4,11 +4,11 @@ export default function useAdminGuard() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
-
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   useEffect(() => {
     async function fetchUser() {
       try {
-        const res = await fetch('http://localhost:8080/api/auth/me', { credentials: 'include' });
+        const res = await fetch(`${API_BASE_URL}/auth/me`, { credentials: 'include' });
         if (res.ok) {
           const data = await res.json();
           setUser(data);

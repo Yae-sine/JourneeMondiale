@@ -13,10 +13,10 @@ const AdminDonationsPage = () => {
   const [activeTab, setActiveTab] = useState('all'); // 'all'  'stats'
   // Chart data states
   const [donationsOverTime, setDonationsOverTime] = useState([]);
-  // const [topDonors, setTopDonors] = useState([]); // Removed: Top Donors chart not needed
+  // const [topDonors, setTopDonors] = useState([]);
   const [monthlyTotals, setMonthlyTotals] = useState([]);
   // Chart customization states
-  const [timePeriod, setTimePeriod] = useState('month'); // 'month', 'year' (week removed)
+  const [timePeriod, setTimePeriod] = useState('month'); // 'month', 'year' 
   const [chartType, setChartType] = useState('area'); // 'area', 'line', 'bar'
   // Pagination and filtering states
   const [currentPage, setCurrentPage] = useState(0);
@@ -107,9 +107,7 @@ const AdminDonationsPage = () => {
       // Process donations over time based on selected period
       const donationsOverTimeData = processDonationsOverTime(filteredDonations, timePeriod);
       setDonationsOverTime(donationsOverTimeData);
-      
-      // Removed: Top Donors processing
-      
+            
       // Process monthly totals for bar chart
       const monthlyTotalsData = processMonthlyTotals(filteredDonations);
       setMonthlyTotals(monthlyTotalsData);
@@ -161,8 +159,6 @@ const AdminDonationsPage = () => {
     return Object.values(donationsByDate)
       .sort((a, b) => new Date(a.date) - new Date(b.date));
   };
-
-  // Removed: processTopDonors function (Top Donors chart not needed)
 
   const processMonthlyTotals = (donations) => {
     const monthlyData = {};
@@ -1107,10 +1103,6 @@ const AdminDonationsPage = () => {
                       </ResponsiveContainer>
                     </div>
                   </div>
-
-                  {/* Removed: Top Donors Chart */
-                  // Top Donors chart and related logic have been removed as requested.
-                  }
                 </div>
               </div>
             )}

@@ -1,11 +1,10 @@
 import axios from 'axios';
 
 // Donation service for API calls
-const API_BASE_URL = 'http://localhost:8080/api/donations';
 
 // Create axios instance with default configuration
 const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: process.env.REACT_APP_API_BASE_URL + '/donations',
   headers: {
     'Content-Type': 'application/json',
   },

@@ -269,7 +269,6 @@ const AdminSubscriptionsPage = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <button
                             onClick={() => {
-                              // You can implement a modal to show subscription details
                               alert(`Détails de l'abonnement ID: ${subscription.id}`);
                             }}
                             className="p-2 rounded-lg text-gray-600 hover:text-white hover:shadow-md transition-all duration-200"

@@ -55,7 +55,7 @@ const UsersPage = () => {
       user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase().includes(searchTerm.toLowerCase());
     
-    // Extract role from user.role string ("ROLE_ADMIN" or "ROLE_USER")
+    // Extract role from user.role string ("ADMIN" or "USER")
     const userRole = user.role ;
     
     const matchesRole = filterRole === 'all' || userRole === filterRole;

@@ -80,7 +80,7 @@ const DonationPageContent = () => {
     try {
       // Step 1: Create Payment Intent on backend
       const { data } = await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080'}/api/payment/create-payment-intent`,
+        `${process.env.REACT_APP_API_BASE_URL}/payment/create-payment-intent`,
         {
           amount: Math.round(parseFloat(amount) * 100), // Convert to cents
           currency: 'EUR',
@@ -118,7 +118,7 @@ const DonationPageContent = () => {
         setMessage('Merci pour votre don ! Votre paiement a été traité avec succès.');
         
         await axios.post(
-          `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080'}/api/payment/confirm`,
+          `${process.env.REACT_APP_API_BASE_URL}/payment/confirm`,
           {
             paymentIntentId: paymentIntent.id,
           },

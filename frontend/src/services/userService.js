@@ -1,11 +1,9 @@
 import axios from 'axios';
 
-// User service for API calls
-const API_BASE_URL = 'http://localhost:8080/api/users';
 
 // Create axios instance with default configuration
 const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: process.env.REACT_APP_API_BASE_URL + '/users',
   headers: {
     'Content-Type': 'application/json',
   },
