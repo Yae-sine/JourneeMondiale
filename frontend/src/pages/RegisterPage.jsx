@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import Header from '../components/home/Header';
 import Footer from '../components/home/Footer';
 import { authService } from '../services/authService';
 
@@ -67,6 +68,7 @@ function RegisterPage() {
 
     return (
         <div className="min-h-screen bg-white flex flex-col">
+            <Header />
             <div className="flex-1 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="flex justify-center">
@@ -284,7 +286,7 @@ function RegisterPage() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#00ACA8] hover:bg-[#00ACA8]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00ACA8] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#00ACA8] hover:bg-[#00ACA8]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00ACA8] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
                                 {loading ? (
                                     <div className="flex items-center">
@@ -298,7 +300,7 @@ function RegisterPage() {
                         </div>
                     </form>
 
-                    <div className="mt-6">
+                    {/* <div className="mt-6">
                         <div className="relative">
                             <div className="absolute inset-0 flex items-center">
                                 <div className="w-full border-t border-gray-300" />
@@ -306,9 +308,9 @@ function RegisterPage() {
                             <div className="relative flex justify-center text-sm">
                                 <span className="px-2 bg-white text-gray-500">Ou inscrivez-vous avec</span>
                             </div>
-                        </div>
+                        </div> */}
 
-                        <div className="mt-6 grid grid-cols-2 gap-3">
+                        {/* <div className="mt-6 grid grid-cols-2 gap-3">
                             <div>
                                 <button className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                                     <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -329,8 +331,8 @@ function RegisterPage() {
                                     <span className="ml-2">LinkedIn</span>
                                 </button>
                             </div>
-                        </div>
-                    </div>
+                        </div> */}
+                    {/* </div> */}
                 </div>
             </div>
             </div>

@@ -1,5 +1,6 @@
 
 import '../index.css';
+import Header from '../components/home/Header';
 import Carousel from '../components/home/carousel';
 import InfoSection from '../components/home/InfoSection';
 import WhySection from '../components/home/WhySection';
@@ -13,6 +14,7 @@ import Footer from '../components/home/Footer';
 function HomePage() {
   return (
     <>
+      <Header />
       <Carousel />
       <InfoSection />
       <WhySection />
