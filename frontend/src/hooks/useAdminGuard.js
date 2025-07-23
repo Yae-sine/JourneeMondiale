@@ -8,7 +8,7 @@ export default function useAdminGuard() {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const res = await fetch(`${API_BASE_URL}/auth/me`, { credentials: 'include' });
+        const res = await fetch(`${API_BASE_URL}/api/auth/me`, { credentials: 'include' });
         if (res.ok) {
           const data = await res.json();
           setUser(data);

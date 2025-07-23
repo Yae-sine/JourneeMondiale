@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance for events API
 const apiClient = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE_URL + '/events',
+  baseURL: process.env.REACT_APP_API_BASE_URL + '/api/events',
   headers: {
     'Content-Type': 'application/json',
   },

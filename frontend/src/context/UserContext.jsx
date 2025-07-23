@@ -20,7 +20,7 @@ export const UserProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/auth/me`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/auth/me`,
         {
           headers: {
             'Content-Type': 'application/json',

@@ -4,7 +4,7 @@ import axios from 'axios';
 
 // Create axios instance with default configuration
 const apiClient = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE_URL + '/donations',
+  baseURL: process.env.REACT_APP_API_BASE_URL + '/api/donations',
   headers: {
     'Content-Type': 'application/json',
   },
