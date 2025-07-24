@@ -17,7 +17,12 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
+
+@Getter
+@Setter
 @Entity
 @Table(name = "event_registrations")
 public class EventRegistration {
@@ -27,7 +32,6 @@ public class EventRegistration {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
-    // @JsonBackReference
     private Event event;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -67,70 +71,5 @@ public class EventRegistration {
         this.user = user;
         this.participantName = participantName;
         this.participantEmail = participantEmail;
-    }
-
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Event getEvent() {
-        return event;
-    }
-
-    public void setEvent(Event event) {
-        this.event = event;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getParticipantName() {
-        return participantName;
-    }
-
-    public void setParticipantName(String participantName) {
-        this.participantName = participantName;
-    }
-
-    public String getParticipantEmail() {
-        return participantEmail;
-    }
-
-    public void setParticipantEmail(String participantEmail) {
-        this.participantEmail = participantEmail;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public LocalDateTime getRegistrationDate() {
-        return registrationDate;
-    }
-
-    public void setRegistrationDate(LocalDateTime registrationDate) {
-        this.registrationDate = registrationDate;
-    }
-
-    public RegistrationStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(RegistrationStatus status) {
-        this.status = status;
     }
 }

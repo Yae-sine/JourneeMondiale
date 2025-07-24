@@ -2,6 +2,11 @@ package com._com.JourneeMondiale.dto;
 
 import java.time.LocalDateTime;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class EventRegistrationDTO {
     private Long id;
     private String participantName;
@@ -23,63 +28,6 @@ public class EventRegistrationDTO {
         this.notes = notes;
         this.registrationDate = registrationDate;
         this.status = status;
-        this.event = event;
-    }
-
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getParticipantName() {
-        return participantName;
-    }
-
-    public void setParticipantName(String participantName) {
-        this.participantName = participantName;
-    }
-
-    public String getParticipantEmail() {
-        return participantEmail;
-    }
-
-    public void setParticipantEmail(String participantEmail) {
-        this.participantEmail = participantEmail;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public LocalDateTime getRegistrationDate() {
-        return registrationDate;
-    }
-
-    public void setRegistrationDate(LocalDateTime registrationDate) {
-        this.registrationDate = registrationDate;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public EventSummaryDTO getEvent() {
-        return event;
-    }
-
-    public void setEvent(EventSummaryDTO event) {
         this.event = event;
     }
 

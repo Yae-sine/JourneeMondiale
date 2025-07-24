@@ -15,24 +15,24 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class UserDetailsImpl implements UserDetails {
   private static final long serialVersionUID = 1L;
 
-  private Long id;
+  final private Long id;
 
-  private String username;
+  final private String username;
 
-  private String email;
+  final private String email;
 
-  private String firstName;
+  final private String firstName;
 
-  private String lastName;
+  final private String lastName;
 
   @JsonIgnore
-  private String password;
+  final private String password;
 
-  private Collection<? extends GrantedAuthority> authorities;
+  final private Collection<? extends GrantedAuthority> authorities;
 
-  private LocalDateTime createdAt;
+  final private LocalDateTime createdAt;
 
-  private LocalDateTime updatedAt;
+  final private LocalDateTime updatedAt;
 
   public UserDetailsImpl(Long id, String username, String email, String firstName, String lastName, String password,
       Collection<? extends GrantedAuthority> authorities, LocalDateTime createdAt, LocalDateTime updatedAt) {

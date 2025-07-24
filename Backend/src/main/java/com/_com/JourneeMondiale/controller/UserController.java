@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,9 +21,6 @@ import com._com.JourneeMondiale.model.User;
 import com._com.JourneeMondiale.service.UserService;
 @RestController
 @RequestMapping("/api/users")
-// @CrossOrigin(origins = "*")
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600, allowCredentials="true")
- // Ensure only ADMIN can access these endpoints
 public class UserController {
     @Autowired
     private UserService service;

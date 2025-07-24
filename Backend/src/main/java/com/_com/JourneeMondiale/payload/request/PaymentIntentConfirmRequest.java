@@ -2,9 +2,12 @@ package com._com.JourneeMondiale.payload.request;
 
 import jakarta.validation.constraints.NotBlank;
 
+import lombok.Data;
+
 /**
  * Request DTO for confirming a payment intent
  */
+@Data
 public class PaymentIntentConfirmRequest {
     
     @NotBlank
@@ -17,22 +20,6 @@ public class PaymentIntentConfirmRequest {
     
     public PaymentIntentConfirmRequest(String paymentIntentId, String paymentMethodId) {
         this.paymentIntentId = paymentIntentId;
-        this.paymentMethodId = paymentMethodId;
-    }
-    
-    public String getPaymentIntentId() {
-        return paymentIntentId;
-    }
-    
-    public void setPaymentIntentId(String paymentIntentId) {
-        this.paymentIntentId = paymentIntentId;
-    }
-    
-    public String getPaymentMethodId() {
-        return paymentMethodId;
-    }
-    
-    public void setPaymentMethodId(String paymentMethodId) {
         this.paymentMethodId = paymentMethodId;
     }
 }
