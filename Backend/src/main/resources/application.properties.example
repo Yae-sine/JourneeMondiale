@@ -1,0 +1,37 @@
+spring.application.name=JourneeMondiale
+logging.level.org.springframework.security=TRACE
+
+spring.h2.console.enabled=true
+# default path: h2-console
+spring.h2.console.path=/h2-ui
+ 
+spring.datasource.url=
+spring.datasource.driverClassName=
+spring.datasource.username=
+spring.datasource.password=
+ 
+spring.jpa.show-sql=true
+spring.jpa.hibernate.ddl-auto=update
+
+
+
+jwt.secret=
+JourneeMondiale.app.jwtExpirationMs=
+JourneeMondiale.app.jwtCookieName=jwt
+JourneeMondiale.app.jwtRoleCookieName=userRole
+# Set to true for production (HTTPS), false for local development (HTTP)
+# JourneeMondiale.app.cookieSecure=false
+
+# Stripe Configuration
+STRIPE_PUBLIC_KEY=
+STRIPE_SECRET_KEY=
+
+# Add your main product ID here -
+STRIPE_PRODUCT_ID=
+
+# CORS Configuration
+app.cors.allowed-origins=
+
+
+STRIPE_WEBHOOK_SECRET=
+
