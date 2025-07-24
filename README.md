@@ -3,6 +3,7 @@
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.3-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![React](https://img.shields.io/badge/React-18-blue.svg)](https://reactjs.org/)
 [![Stripe](https://img.shields.io/badge/Stripe-Payment-blue.svg)](https://stripe.com)
+[![Docker](https://img.shields.io/badge/Docker-Container-blue.svg)](https://www.docker.com/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 
@@ -15,6 +16,7 @@ A comprehensive full-stack web application for managing donations, subscriptions
 - Role-based access control (Admin/User)
 - HTTP-only cookie security for session management
 - Protected routes and unauthorized access handling
+
 
 ### 💳 Payment Integration
 - Stripe payment processing for donations and subscriptions
@@ -88,10 +90,6 @@ A comprehensive full-stack web application for managing donations, subscriptions
 2. **Set up environment variables:**
    
    Create a `.env` file in the project root:
-   ```bash
-   cp .env.example .env
-   ```
-   
    Edit the `.env` file and add your Stripe secret key:
    ```env
    STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
@@ -184,14 +182,6 @@ JourneeMondiale/
 - **DNS Resolution**: Services can reference each other by name
 - **Port Mapping**: Exposes services to host machine
 
-
-## 🔒 Security Features
-
-- JWT-based authentication with HTTP-only cookies
-- CORS configuration for cross-origin requests
-- Password hashing and validation
-- Protected API endpoints
-- Role-based access control
 
 ## 🧪 Development
 
