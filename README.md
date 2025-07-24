@@ -9,6 +9,44 @@
 
 A comprehensive full-stack web application for managing donations, subscriptions, and events with integrated Stripe payment processing.
 
+## ✨ Preview 
+<p align="center">
+<table>
+  <tr>
+    <td>
+      <img width="400" alt="Screenshot 1" src="https://github.com/user-attachments/assets/6527a5e3-a4d5-44c0-a600-361751ec5f07" />
+    </td>
+    <td>
+      <img width="450" alt="Screenshot 4" src="https://github.com/user-attachments/assets/f62d8727-8725-46a6-96de-3b0ef781352c" />
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <img width="400" alt="Screenshot 3" src="https://github.com/user-attachments/assets/d0ed76f1-4bf6-4894-82c7-2814e432fe9a" />
+    </td>
+    <td>
+      <img width="450" alt="Screenshot 2" src="https://github.com/user-attachments/assets/152b8d8e-9987-4dc0-8b51-52ab499a45e3" />
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <img width="400" alt="Screenshot 5" src="https://github.com/user-attachments/assets/1a76aa77-a12d-442d-89e1-bf1cf8d34184" />
+    </td>
+    <td>
+      <img width="425" alt="Screenshot 6" src="https://github.com/user-attachments/assets/ea4e28aa-2de6-433a-b3ac-eb60dd147596" />
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <img width="400" alt="Screenshot 7" src="https://github.com/user-attachments/assets/73b295f0-98df-40dd-bf7f-3fd563408f81" />
+    </td>
+    <td>
+       <img width="425" alt="Screenshot 2025-07-24 205215" src="https://github.com/user-attachments/assets/8df7554f-fb28-461e-8b2a-7698c989d975" />
+    </td>
+  </tr>
+</table>
+</p>
+
 ## 🌟 Features
 
 ### 🔐 Authentication & Authorization
